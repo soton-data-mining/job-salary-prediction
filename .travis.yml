@@ -1,0 +1,12 @@
+language: python
+python:
+  - 3.4
+  - 3.5
+  - 3.6
+install: "pip install -r requirements.txt"
+script: pytest
+before_script:
+  - "flake8 ."
+notifications:
+  email:
+    - ccn1u16@soton.ac.uk
