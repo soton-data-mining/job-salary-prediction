@@ -90,6 +90,7 @@ ENV/
 
 
 # virtualenv
+data/
 bin/
 include/
 pip-selfcheck.json
