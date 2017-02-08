@@ -33,7 +33,7 @@ def get_feature_word_count(column_to_count):
         puct_exclude = set(string.punctuation)
         data_punct_removed = ''.join(ch for ch in data_digits_removed if ch not in puct_exclude)
         # Remove punctuations
-        data_punct_removed = data_puctuations_removed.lower()  # Lowercase the string
+        data_punct_removed = data_punct_removed.lower()  # Lowercase the string
         data_as_list = data_punct_removed.split()  # Turn into list
         counts_as_dict = Counter(data_as_list)  # Turn into dictionary with counts
         for item in counts_as_dict:
