@@ -38,7 +38,7 @@ def get_feature_word_count(column_to_count):
         counts_as_dict = Counter(data_as_list)  # Turn into dictionary with counts
         for item in counts_as_dict:
             if item in count_dict:  # If item exists in the dict
-                count_dict[item] = count_dict[item]+1
+                count_dict[item] += 1
             else:  # If item doesnt exists
                 count_dict[item] = 1
     for item in list(count_dict):
