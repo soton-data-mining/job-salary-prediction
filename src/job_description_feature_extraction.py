@@ -3,6 +3,10 @@ import operator
 from collections import Counter
 import RAKE
 
+JOB_DESCRIPTION_FIELD = 'FullDescription'
+
+STOP_WORDS_PATH = "../smartstop.txt"
+
 
 def get_one_hot_encoded_words(feature_to_extract):
     """
@@ -57,9 +61,10 @@ def get_rake_keywords(job_description):
     :param job_description: data frame of job_description feature from csv
     :return: list of keywords per document
     """
-    job_description_list = job_description['FullDescription'].values.tolist()
+    job_description_list = job_description[JOB_DESCRIPTION_FIELD].values.tolist()
     keywords = []
-    rake = RAKE.Rake("../smartstop.txt")
+    rake = RAKE.Rake(STOP_WORDS_PATH)
     for doc in job_description_list:
-        keywords.append(rake.run(doc))
+        # save top 3 results, the rest is usually garbage
+        keywords.append(rake.run(doc)[:3])
     return keywords
