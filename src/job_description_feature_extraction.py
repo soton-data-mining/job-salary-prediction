@@ -4,6 +4,8 @@ from collections import Counter
 from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
 
+JOB_DESCIPTION_FIELD = 'FullDescription'
+
 
 def get_one_hot_encoded_words(feature_to_extract):
     """
@@ -90,6 +92,6 @@ def _vectorize(job_description):
     :return: (vectorizer, term_vector)
     """
     tfidf_vectorizer = TfidfVectorizer()
-    job_description_list = job_description['FullDescription'].values.tolist()
+    job_description_list = job_description[JOB_DESCIPTION_FIELD].values.tolist()
     term_vector = tfidf_vectorizer.fit_transform(job_description_list)
     return tfidf_vectorizer, term_vector
