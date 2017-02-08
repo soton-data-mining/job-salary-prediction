@@ -1,3 +1,9 @@
+# this is where the raw csv files and any other data should go to
+/data
+
+# JetBrains IDE files
+.idea
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

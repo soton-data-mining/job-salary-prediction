@@ -1,13 +1,15 @@
 import string
 import operator
 from collections import Counter
+from sklearn.feature_extraction.text import TfidfVectorizer
+import numpy as np
 
 
 def get_one_hot_encoded_words(feature_to_extract):
     """
     get_feature_word_count(x) returns a list of tuples which consists of word:count
     From those lists, the words appear in the list below ( word_list ) was hand picked
-    Fhey are the word which might have an impact on the salary
+    They are the word which might have an impact on the salary
     """
     word_list = ['excellent', 'graduate', 'immediate', 'junior', 'urgent']
     encoded_features = []
@@ -42,8 +44,52 @@ def get_feature_word_count(column_to_count):
             else:  # If item doesnt exists
                 count_dict[item] = 1
     for item in list(count_dict):
-        if count_dict[item] < len(column_to_count)/200:  # Anything below 0.5 is insignificant
+        if count_dict[item] < len(column_to_count) / 200:  # Anything below 0.5 is insignificant
             del count_dict[item]
     count_dict = sorted(count_dict.items(), key=operator.itemgetter(0))
     # Returns a list of tuples which has word:count
     return count_dict
+
+
+def get_top_features(job_description, k):
+    """
+    use TfIdf to extract top k keywords of corpus
+
+    :param job_description: data frame
+    :param k: number of
+    :return: list of k top features
+    """
+    # based on https://stackoverflow.com/questions/25217510/
+    tfidf_vectorizer, term_vector = _vectorize(job_description)
+    idf_dict = _build_idf_dict(tfidf_vectorizer)
+    idf_ranking = np.argsort(tfidf_vectorizer.idf_)[::-1]
+    features = tfidf_vectorizer.get_feature_names()
+    return [features[i] for i in idf_ranking[:k]]
+
+
+def _build_idf_dict(tfidf_vectorizer):
+    """
+    builds a dictionarry of all terms
+
+    :param tfidf_vectorizer
+    :return: dictrionary in form of {term: score}
+    """
+    idf_dict = {}
+    features = tfidf_vectorizer.get_feature_names()
+    # TODO: not sure if that's the most efficient way to do this..
+    for term, score in zip(features, tfidf_vectorizer.idf_):
+        idf_dict[term] = score
+    return idf_dict
+
+
+def _vectorize(job_description):
+    """
+    vectorize job_descriptoins using tfidf
+
+    :param job_description: data_frame
+    :return: (vectorizer, term_vector)
+    """
+    tfidf_vectorizer = TfidfVectorizer()
+    job_description_list = job_description['FullDescription'].values.tolist()
+    term_vector = tfidf_vectorizer.fit_transform(job_description_list)
+    return tfidf_vectorizer, term_vector
