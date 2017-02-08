@@ -63,7 +63,7 @@ def get_top_features(job_description, k):
     """
     # based on https://stackoverflow.com/questions/25217510/
     tfidf_vectorizer, term_vector = _vectorize(job_description)
-    # use _build_idf_dict to get a {term: score} dictionary which was the whole point of this exercise
+    # use _build_idf_dict to get a {term: score} dictionary which was the whole point here
     # but it makes the build fail because of unused variables so yea
     # idf_dict = _build_idf_dict(tfidf_vectorizer)
     idf_ranking = np.argsort(tfidf_vectorizer.idf_)[::-1]
