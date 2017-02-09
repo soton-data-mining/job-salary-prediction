@@ -1,5 +1,5 @@
 flake8>=3.2.1
-python-python-rake==1.0.7
+python-rake==1.0.7
 pandas==0.19.2
 numpy==1.11.2
 # my version of sklearn is 0.0 which seems more like an emoji than a version
