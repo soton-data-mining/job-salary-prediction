@@ -1,10 +1,10 @@
 import pandas as pd
 
-from job_description_feature_extraction import get_one_hot_encoded_words, get_rake_keywords, get_top_features
-
+from job_description_feature_extraction import get_one_hot_encoded_words
+from job_description_feature_extraction import get_rake_keywords
+from job_description_feature_extraction import get_top_features
 
 raw_data_csv_file_name = '../data/Train_rev1.csv'
-
 
 if __name__ == "__main__":
     raw_data = pd.read_csv(raw_data_csv_file_name)
