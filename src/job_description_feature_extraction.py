@@ -10,8 +10,6 @@ JOB_DESCRIPTION_FIELD = 'FullDescription'
 STOP_WORDS_PATH = "../smartstop.txt"
 
 
-
-
 def get_one_hot_encoded_words(feature_to_extract):
     """
     get_feature_word_count(x) returns a list of tuples which consists of word:count
@@ -115,6 +113,6 @@ def _vectorize(job_description):
     :return: (vectorizer, term_vector)
     """
     tfidf_vectorizer = TfidfVectorizer()
-    job_description_list = job_description[JOB_DESCIPTION_FIELD].values.tolist()
+    job_description_list = job_description[JOB_DESCRIPTION_FIELD].values.tolist()
     term_vector = tfidf_vectorizer.fit_transform(job_description_list)
     return tfidf_vectorizer, term_vector
