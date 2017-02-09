@@ -1,5 +1,5 @@
 def get_one_hot_encoded_contract(contract):
-    contract_as_list = contract.values.tolist()  # Returns a list of list [[]] hence the next few lines
+    contract_as_list = contract.values.tolist()  # Returns a list of list [[]]
     contract_cleaned = []
 
     for item in contract_as_list:

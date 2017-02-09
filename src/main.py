@@ -19,7 +19,7 @@ if __name__ == "__main__":
     test_con_time_feature = test_raw_data[['ContractTime']]
 
     # Train one hot encoded features - desciption, contract-type, contract-time
-    # All lists containt list of lists of features in one hot encoded format ready to append to 
+    # All lists containt list of lists of features in one hot encoded format ready to append to
     # cleaned set
     # Description: consisting of 5 features existence of words below in the description:
     # 'excellent', 'graduate', 'immediate', 'junior', 'urgent'
