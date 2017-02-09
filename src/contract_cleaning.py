@@ -12,4 +12,4 @@ def get_one_hot_encoded_feature(feature):
                 unique_feature_field.append(0)
         one_hot_encoded_features.append(unique_feature_field)
 
-    return one_hot_encoded_features
+    return one_hot_encoded_features  # Return list of lists of one hot encoded features
