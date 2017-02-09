@@ -1,19 +1,15 @@
-def get_one_hot_encoded_contract(contract):
-    contract_as_list = contract.values.tolist()  # Returns a list of list [[]]
-    contract_cleaned = []
+def get_one_hot_encoded_feature(feature):
+    feature_cleaned = [item[0] for item in feature.values.tolist()]
+    feature_set = set(feature_cleaned)  # Get unique values
 
-    for item in contract_as_list:
-        contract_cleaned.append(item[0])
-    contract_set = set(contract_cleaned)  # Get unique values
-
-    one_hot_encoded_contracts = []
-    for unique_item in contract_set:  # One hot encode contracts
-        unique_contract_field = []
-        for individual_item in contract_cleaned:
+    one_hot_encoded_features = []
+    for unique_item in feature_set:  # One hot encode contracts
+        unique_feature_field = []
+        for individual_item in feature_cleaned:
             if str(individual_item) == str(unique_item):
-                unique_contract_field.append(1)
+                unique_feature_field.append(1)
             else:
-                unique_contract_field.append(0)
-        one_hot_encoded_contracts.append(unique_contract_field)
+                unique_feature_field.append(0)
+        one_hot_encoded_features.append(unique_feature_field)
 
-    return one_hot_encoded_contracts
+    return one_hot_encoded_features

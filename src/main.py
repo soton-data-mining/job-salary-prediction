@@ -1,7 +1,7 @@
 import pandas as pd
 
 from job_description_feature_extraction import get_one_hot_encoded_words, get_rake_keywords
-from contract_cleaning import get_one_hot_encoded_contract
+from contract_cleaning import get_one_hot_encoded_feature
 
 train_raw_data_csv_file_name = '../data/Train_rev1.csv'
 test_raw_data_csv_file_name = '../data/Test_rev1.csv'
@@ -25,14 +25,14 @@ if __name__ == "__main__":
     # 'excellent', 'graduate', 'immediate', 'junior', 'urgent'
     train_one_hot_encoded_desc_words = get_one_hot_encoded_words(train_description_feature)
     # Contract type: One hot encoded, 3 features: part time, full time, *is empty*
-    train_one_hot_encoded_contract_type = get_one_hot_encoded_contract(train_con_type_feature)
+    train_one_hot_encoded_contract_type = get_one_hot_encoded_feature(train_con_type_feature)
     # Contract time: One hot encoded, 3 features: permanent, contract, *is empty*
-    train_one_hot_encoded_contract_time = get_one_hot_encoded_contract(train_con_time_feature)
+    train_one_hot_encoded_contract_time = get_one_hot_encoded_feature(train_con_time_feature)
 
     # Test one hot encoded features - desciption, contract-type, contract-time
     test_one_hot_encoded_desc_words = get_one_hot_encoded_words(test_description_feature)
-    test_one_hot_encoded_contract_type = get_one_hot_encoded_contract(test_con_type_feature)
-    test_one_hot_encoded_contract_time = get_one_hot_encoded_contract(test_con_time_feature)
+    test_one_hot_encoded_contract_type = get_one_hot_encoded_feature(test_con_type_feature)
+    test_one_hot_encoded_contract_time = get_one_hot_encoded_feature(test_con_time_feature)
 
     keywords = get_rake_keywords(train_description_feature)
     # one_hot_encoded_features are a list of 5 lists consisting of 1s and 0s
