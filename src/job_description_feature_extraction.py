@@ -1,10 +1,15 @@
 import string
 import operator
 from collections import Counter
+import RAKE
 from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
 
-JOB_DESCIPTION_FIELD = 'FullDescription'
+JOB_DESCRIPTION_FIELD = 'FullDescription'
+
+STOP_WORDS_PATH = "../smartstop.txt"
+
+
 
 
 def get_one_hot_encoded_words(feature_to_extract):
@@ -51,6 +56,22 @@ def get_feature_word_count(column_to_count):
     count_dict = sorted(count_dict.items(), key=operator.itemgetter(0))
     # Returns a list of tuples which has word:count
     return count_dict
+
+
+def get_rake_keywords(job_description):
+    """
+    extract keywords of documents using Rapid Automatic Keyword Extraction
+
+    :param job_description: data frame of job_description feature from csv
+    :return: list of keywords per document
+    """
+    job_description_list = job_description[JOB_DESCRIPTION_FIELD].values.tolist()
+    keywords = []
+    rake = RAKE.Rake(STOP_WORDS_PATH)
+    for doc in job_description_list:
+        # save top 3 results, the rest is usually garbage
+        keywords.append(rake.run(doc)[:3])
+    return keywords
 
 
 def get_top_features(job_description, k):
