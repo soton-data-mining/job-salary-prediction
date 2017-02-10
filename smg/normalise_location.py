@@ -122,4 +122,3 @@ if __name__ == "__main__":
 
     # write out new DataFrame
     df.to_csv("test_normalised_location.csv")
-
