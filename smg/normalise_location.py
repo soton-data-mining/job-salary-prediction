@@ -1,17 +1,16 @@
 #! /usr/bin/env python3
 
-import numpy as np
-import pandas as pd
-
 import re
 import time
+
 from multiprocessing import Pool
 
 import geopy
-from geopy.geocoders import GoogleV3 as Geocoder
+import pandas as pd
 
 
 GOOGLE_API_KEY = "AIzaSyDtcYWNxzjjZRZrkPPAxEgrGD78Ey7pc50"
+
 
 def preprocess_location_text(location_text):
     """
