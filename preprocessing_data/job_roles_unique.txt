@@ -5519,7 +5519,6 @@ Dodger, can
 Doffer
 Doffer and setter
 Doffer, ring
-Dogger
 Dogger-on
 Dogger-up
 Dollier
@@ -5527,6 +5526,7 @@ Dollyer
 Domestic
 Domestic, kitchen
 Donkeyman
+Dogger
 Doorman
 Doorman, furnace
 Doper
