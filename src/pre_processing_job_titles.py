@@ -12,7 +12,12 @@ def pre_process_job_titles():
         job_title_processed.append(removed_stop_title)
     return job_title_processed
 
+def process_actual_jobs_list():
+    unprocessed_job_roles = DataGetter.get_unique_job_roles()
+    print(unprocessed_job_roles)
 
 if __name__ == "__main__":
-    unique_jobs = pre_process_job_titles()
-    print(unique_jobs)
+    # unique_jobs = pre_process_job_titles()
+
+    # print(unique_jobs)
+    process_actual_jobs_list()
