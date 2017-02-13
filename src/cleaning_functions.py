@@ -26,7 +26,7 @@ def get_one_hot_encoded_feature(feature):
 def get_binary_encoded_feature(feature):
     feature_as_list = pandas_vector_to_list(feature)
     unique_feature_list = list(set(feature_as_list))  # Get unique values
-    mapping_dict = {item : index for index,item in enumerate(unique_feature_list)}
+    mapping_dict = {item: index for index, item in enumerate(unique_feature_list)}
     binary_feature_length = len(bin(len(unique_feature_list))[2:])  # How many columns needed
     # Amount of columns needed to express this feature
     binary_encoded_feature = []
