@@ -1,12 +1,5 @@
-import os
 from src.data_extractor.data_getter import DataGetter
 import nltk
-
-STOP_WORDS_WIHT_CITIES_PATH = "../../stop_word_with_cities.txt"
-CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
-CSV_TRAIN_DATA = CURRENT_DIR + "/../../data/Test_rev1.csv"
-UNIQUE_JOBS_DATA = CURRENT_DIR + "/../../data/unique_jobs.txt"
-
 
 def pre_process_job_titles():
     nltk.download('punkt')
