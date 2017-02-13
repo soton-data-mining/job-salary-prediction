@@ -3,8 +3,9 @@ def pandas_vector_to_list(pandas_df):
     return py_list
 
 
-def get_bin(x,n):
+def get_bin(x, n):
     return format(x, 'b').zfill(n)
+
 
 def get_one_hot_encoded_feature(feature):
     feature_cleaned = pandas_vector_to_list(feature)
@@ -43,6 +44,3 @@ def get_binary_encoded_feature(feature):
         for index, digit in enumerate(corresponding_binary):
             binary_encoded_feature[index].append(digit)
     return binary_encoded_feature
-
-
-
