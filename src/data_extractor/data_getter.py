@@ -4,8 +4,8 @@ import csv
 
 class DataGetter:
     CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
-    STOP_WORDS_WITH_CITIES = CURRENT_DIR  + "/../../stop_word_with_cities.txt"
-    TOWN_DATA = CURRENT_DIR + "/../../towns.txt"
+    STOP_WORDS_WITH_CITIES = CURRENT_DIR  + "/../../preprocessing_data/stop_word_with_cities.txt"
+    TOWN_DATA = CURRENT_DIR + "/../../preprocessing_data/towns.txt"
     CSV_TRAIN_DATA = CURRENT_DIR + "/../../data/Test_rev1.csv"
 
     @classmethod

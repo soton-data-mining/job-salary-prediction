@@ -5,7 +5,7 @@ import RAKE
 
 JOB_DESCRIPTION_FIELD = 'FullDescription'
 
-STOP_WORDS_PATH = "../smartstop.txt"
+STOP_WORDS_PATH = "../preprocessing_data/smartstop.txt"
 
 
 def get_one_hot_encoded_words(feature_to_extract):

@@ -1,4 +1,4 @@
-from src.data_extractor.data_getter import DataGetter
+from data_extractor.data_getter import DataGetter
 import nltk
 
 def pre_process_job_titles():
