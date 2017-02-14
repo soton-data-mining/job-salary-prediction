@@ -1,4 +1,3 @@
-A
 A1
 A2
 A3
@@ -17349,60 +17348,60 @@ Sacristan
 Saddler
 Sailor
 Sailorman
-Salesman
-Salesman, advertising
-Salesman, bread
-Salesman, butcher's
-Salesman-buyer
-Salesman, car
-Salesman, cattle
-Salesman-collector
-Salesman, commercial
-Salesman, commission
-Salesman, computer
-Salesman, counter
-Salesman, cream, ice
-Salesman, credit
-Salesman, delivery
-Salesman, drinks, soft
-Salesman-driver
-Salesman, export
-Salesman, fish
-Salesman, fish and fruit
-Salesman, fish and poultry
-Salesman, fishmonger's
-Salesman, forecourt
-Salesman, glazing, double
-Salesman, ice-cream
-Salesman, indoor
-Salesman, insurance
-Salesman, land
-Salesman, market
-Salesman, meat
-Salesman-mechanic
-Salesman, milk
-Salesman, motor
-Salesman, outside
-Salesman, parts
-Salesman, petrol
-Salesman, powder
-Salesman, property
-Salesman, retail
-Salesman, shop
-Salesman, showroom
-Salesman, space, advertising
-Salesman, tea
-Salesman, technical
-Salesman, telephone
-Salesman, television
-Salesman, ticket
-Salesman, travelling
-Salesman, TV
-Salesman, tyre
-Salesman, van
-Salesman, warehouse
-Salesman, water, mineral
-Salesman, wool
+Sales
+Sales, advertising
+Sales, bread
+Sales, butcher's
+Sales-buyer
+Sales, car
+Sales, cattle
+Sales-collector
+Sales, commercial
+Sales, commission
+Sales, computer
+Sales, counter
+Sales, cream, ice
+Sales, credit
+Sales, delivery
+Sales, drinks, soft
+Sales-driver
+Sales, export
+Sales, fish
+Sales, fish and fruit
+Sales, fish and poultry
+Sales, fishmonger's
+Sales, forecourt
+Sales, glazing, double
+Sales, ice-cream
+Sales, indoor
+Sales, insurance
+Sales, land
+Sales, market
+Sales, meat
+Sales-mechanic
+Sales, milk
+Sales, motor
+Sales, outside
+Sales, parts
+Sales, petrol
+Sales, powder
+Sales, property
+Sales, retail
+Sales, shop
+Sales, showroom
+Sales, space, advertising
+Sales, tea
+Sales, technical
+Sales, telephone
+Sales, television
+Sales, ticket
+Sales, travelling
+Sales, TV
+Sales, tyre
+Sales, van
+Sales, warehouse
+Sales, water, mineral
+Sales, wool
 Salter
 Salter, dry
 Salter, fish
@@ -19510,6 +19509,7 @@ Telephonist, sales
 Telephonist-secretary
 Telephonist, shorthand
 Telephonist-typist
+Telesales
 Teller
 Teller, fortune
 Temperer
