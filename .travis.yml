@@ -4,6 +4,3 @@ python:
 install: "pip install -r requirements.txt"
 script:
   - "flake8 ."
-notifications:
-  email:
-    - ccn1u16@soton.ac.uk
