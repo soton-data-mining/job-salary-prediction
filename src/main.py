@@ -49,7 +49,7 @@ if __name__ == "__main__":
     # Region: Binary encoded
     cleaned_binary_encoded_region = get_binary_encoded_feature(updated_region_feature)
 
-    #keywords = get_rake_keywords(train_description_feature)
+    keywords = get_rake_keywords(train_description_feature)
     # one_hot_encoded_features are a list of 5 lists consisting of 1s and 0s
     # If a word appears in the description, this kind of representation will
     # make it feasible for machine learning

@@ -11,7 +11,7 @@ def get_bin(x, n):
 
 
 def get_one_hot_encoded_feature(feature):
-    if isinstance(feature,list):  # Input is list
+    if isinstance(feature, list):  # Input is list
         feature_as_list = feature
     else:  # Input is pandas df
         feature_as_list = pandas_vector_to_list(feature)
@@ -30,7 +30,7 @@ def get_one_hot_encoded_feature(feature):
 
 
 def get_binary_encoded_feature(feature):
-    if isinstance(feature,list):  # Input is list
+    if isinstance(feature, list):  # Input is list
         feature_as_list = feature
     else:  # Input is pandas df
         feature_as_list = pandas_vector_to_list(feature)
