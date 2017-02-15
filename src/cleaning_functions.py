@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 def pandas_vector_to_list(pandas_df):
     py_list = [item[0] for item in pandas_df.values.tolist()]
     return py_list
@@ -12,7 +13,7 @@ def get_bin(x, n):
 def get_one_hot_encoded_feature(feature):
     if type(feature) == "<class 'list'>":  # Input is list
         feature_as_list = feature
-    else :  # Input is pandas df
+    else:  # Input is pandas df
         feature_as_list = pandas_vector_to_list(feature)
     feature_set = set(feature_as_list)  # Get unique values
 
@@ -31,7 +32,7 @@ def get_one_hot_encoded_feature(feature):
 def get_binary_encoded_feature(feature):
     if str(type(feature)) == "<class 'list'>":  # Input is list
         feature_as_list = feature
-    else :  # Input is pandas df
+    else:  # Input is pandas df
         feature_as_list = pandas_vector_to_list(feature)
     unique_feature_list = list(set(feature_as_list))  # Get unique values
     mapping_dict = {item: index for index, item in enumerate(unique_feature_list)}
@@ -55,7 +56,7 @@ def update_location(location_raw, cleaned_location):
     list_location_raw = pandas_vector_to_list(location_raw)
     unique_cleaned_location = set(list_cleaned_location)
     update_count = 0
-    for index, item in enumerate(list_cleaned_location): # Loop for town
+    for index, item in enumerate(list_cleaned_location):  # Loop for town
         if pd.isnull(item):  # Empty item in cleaned town
             match_count = 0
             matched_town = ''
