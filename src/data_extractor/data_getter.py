@@ -4,7 +4,7 @@ import csv
 
 class DataGetter:
     CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
-    STOP_WORDS_WITH_CITIES = CURRENT_DIR  + "/../../preprocessing_data/stop_word_with_cities.txt"
+    STOP_WORDS_WITH_CITIES = CURRENT_DIR + "/../../preprocessing_data/stop_word_with_cities.txt"
     TOWN_DATA = CURRENT_DIR + "/../../preprocessing_data/towns.txt"
     CSV_TRAIN_DATA = CURRENT_DIR + "/../../data/Test_rev1.csv"
     UNIQUE_JOB_DATA = CURRENT_DIR + "/../../preprocessing_data/job_roles_unique.txt"
@@ -20,7 +20,6 @@ class DataGetter:
             for city in f.readlines():
                 cities.append(city.lower().replace("\n", ""))
             return cities
-
 
     @classmethod
     def get_stop_word_inc_cities(cls):
@@ -57,7 +56,6 @@ class DataGetter:
                     job_test_data.append(row[0].split(","))
 
             return job_test_data
-
 
     @classmethod
     def get_unique_job_roles(cls):
