@@ -1,6 +1,9 @@
+#!/usr/bin/env python
+
 import pandas as pd
 
 from job_description_feature_extraction import get_one_hot_encoded_words, get_rake_keywords
+from job_titles_feature_extraction import get_stemmed_sentences, pre_process_job_titles
 from cleaning_functions import get_one_hot_encoded_feature, get_binary_encoded_feature
 
 train_raw_data_csv_file_name = '../data/Train_rev1.csv'
@@ -30,6 +33,11 @@ if __name__ == "__main__":
     train_binary_encoded_company = get_binary_encoded_feature(train_company_feature)
     # Source name: Binary encoded
     train_binary_encoded_source = get_binary_encoded_feature(train_source_name_feature)
+
+    # get stemmed/sorted job title and job title modifiers
+    train_job_titles, train_job_title_modifiers = get_stemmed_sentences(
+        pre_process_job_titles()
+    )
 
     keywords = get_rake_keywords(train_description_feature)
     # one_hot_encoded_features are a list of 5 lists consisting of 1s and 0s

@@ -114,22 +114,20 @@ def get_stemmed_sorted_role_and_modifiers(title):
     )
 
 
-def get_stemmed_sentences():
+def get_stemmed_sentences(processed_job_titles):
     """
-    create the mappings for every job title in the training set
-    :return: mappings for roles and modifiers.
+    get two vectors which are the processed job titles and modifiers to use for ML
+    :return: Vectors with the processed/stemmed datas.
     """
 
     # get official roles and modifiers sets:
     official_unique_jobs, official_unique_modifiers = process_actual_jobs_list()
-    # get job titles from out training set:
-    processed_job_titles = pre_process_job_titles()
     # set up our english snowball stemmer
     stemmer = nltk.stem.snowball.EnglishStemmer()
 
     # prep some mappings
-    title_to_title_mapping = {}
-    mod_to_mod_mapping = {}
+    mapped_titles = []
+    mapped_modifiers = []
 
     for job_title_text in processed_job_titles:
         sorted_job_stem, sorted_mod_stem = _get_stemmed_sorted_role_and_modifiers(
@@ -139,7 +137,7 @@ def get_stemmed_sentences():
             stemmer
         )
 
-        title_to_title_mapping[job_title_text] = sorted_job_stem
-        mod_to_mod_mapping[job_title_text] = sorted_mod_stem
+        mapped_titles.append(' '.join(sorted_job_stem))
+        mapped_modifiers.append(' '.join(sorted_mod_stem))
 
-    return title_to_title_mapping, mod_to_mod_mapping
+    return mapped_titles, mapped_modifiers
