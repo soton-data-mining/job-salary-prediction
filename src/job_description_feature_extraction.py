@@ -72,7 +72,7 @@ def get_rake_keywords(job_description):
     return keywords
 
 
-def get_top_features(job_description, k):
+def get_top_idf_features(job_description, k):
     """
     use TfIdf to extract top k keywords of corpus
 

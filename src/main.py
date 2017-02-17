@@ -1,6 +1,8 @@
 import pandas as pd
 
-from job_description_feature_extraction import get_one_hot_encoded_words, get_rake_keywords
+from job_description_feature_extraction import (get_one_hot_encoded_words,
+                                                get_rake_keywords,
+                                                get_top_idf_features)
 from cleaning_functions import (get_one_hot_encoded_feature,
                                 get_binary_encoded_feature,
                                 update_location)
@@ -54,3 +56,7 @@ if __name__ == "__main__":
     # If a word appears in the description, this kind of representation will
     # make it feasible for machine learning
     # We will need to append those lists on final data frame when everything is cleaned
+
+    # get top k terms with the highest idf score (this is atm not very useful
+    # but it will be used for the tf.idf similarity stuff
+    top_keywords = get_top_idf_features(train_description_feature, 5)
