@@ -4,3 +4,7 @@ numpy>=1.11.2
 pandas>=0.19.1
 geopy>=1.11.0
 python-rake>=1.0.7
+# my version of sklearn is 0.0 which seems more like an emoji than a version
+# if someone has a proper version, feel free to lock it
+sklearn
+scipy==0.18.0

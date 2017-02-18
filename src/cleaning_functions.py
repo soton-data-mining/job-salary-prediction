@@ -1,3 +1,6 @@
+import pandas as pd
+
+
 def pandas_vector_to_list(pandas_df):
     py_list = [item[0] for item in pandas_df.values.tolist()]
     return py_list
@@ -8,13 +11,16 @@ def get_bin(x, n):
 
 
 def get_one_hot_encoded_feature(feature):
-    feature_cleaned = pandas_vector_to_list(feature)
-    feature_set = set(feature_cleaned)  # Get unique values
+    if isinstance(feature, list):  # Input is list
+        feature_as_list = feature
+    else:  # Input is pandas df
+        feature_as_list = pandas_vector_to_list(feature)
+    feature_set = set(feature_as_list)  # Get unique values
 
     one_hot_encoded_features = []
     for unique_item in feature_set:  # One hot encode contracts
         unique_feature_field = []
-        for individual_item in feature_cleaned:
+        for individual_item in feature_as_list:
             if str(individual_item) == str(unique_item):
                 unique_feature_field.append(1)
             else:
@@ -24,7 +30,10 @@ def get_one_hot_encoded_feature(feature):
 
 
 def get_binary_encoded_feature(feature):
-    feature_as_list = pandas_vector_to_list(feature)
+    if isinstance(feature, list):  # Input is list
+        feature_as_list = feature
+    else:  # Input is pandas df
+        feature_as_list = pandas_vector_to_list(feature)
     unique_feature_list = list(set(feature_as_list))  # Get unique values
     mapping_dict = {item: index for index, item in enumerate(unique_feature_list)}
     binary_feature_length = len(bin(len(unique_feature_list))[2:])  # How many columns needed
@@ -40,3 +49,24 @@ def get_binary_encoded_feature(feature):
         for index, digit in enumerate(corresponding_binary):
             binary_encoded_feature[index].append(digit)
     return binary_encoded_feature
+
+
+def update_location(location_raw, cleaned_location):
+    list_cleaned_location = pandas_vector_to_list(cleaned_location)
+    list_location_raw = pandas_vector_to_list(location_raw)
+    unique_cleaned_location = set(list_cleaned_location)
+    update_count = 0
+    for index, item in enumerate(list_cleaned_location):  # Loop for town
+        if pd.isnull(item):  # Empty item in cleaned town
+            match_count = 0
+            matched_town = ''
+            for town in unique_cleaned_location:  # In each unique town
+                if str(town) in str(list_location_raw[index]):
+                    match_count += 1
+                    matched_town = town
+            if match_count == 1:  # Don't update records that have multiple matches
+                update_count += 1
+                list_cleaned_location[index] = matched_town
+                # print('Found:', list_location_raw[index], ' Updated: ', matched_town)
+    # print(update_count)
+    return list_cleaned_location
