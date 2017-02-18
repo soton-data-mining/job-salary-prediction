@@ -2,7 +2,7 @@
 import re
 
 import nltk
-
+from collections import Counter
 from data_extractor.data_getter import DataGetter
 
 
@@ -22,7 +22,7 @@ def pre_process_job_titles():
     job_title_processed = []
     for job_title in job_titles:
         title = nltk.word_tokenize(job_title)
-        removed_stop_title = " ".join([word for word in title if word not in cached_stop_words])
+        removed_stop_title = " ".join([word.lower() for word in title if word.lower() not in cached_stop_words])
         job_title_processed.append(removed_stop_title)
     return job_title_processed
 
@@ -78,7 +78,7 @@ def _get_stemmed_sorted_role_and_modifiers(job_title_text,
     # 2) stem it
     # 3) pick out only those we like from the 'official' list.
 
-    individual_words = re.findall('\w+', job_title_text.lower())
+    individual_words = nltk.word_tokenize(job_title_text.lower())
     stemmed_words = [stemmer.stem(word) for word in individual_words]  # lemmatize each word
 
     matching_jobs = [
@@ -141,3 +141,12 @@ def get_stemmed_sentences(processed_job_titles):
         mapped_modifiers.append(' '.join(sorted_mod_stem))
 
     return mapped_titles, mapped_modifiers
+
+if __name__ == "__main__":
+    processed_job_titles = pre_process_job_titles()
+    job_titles, mods = get_stemmed_sentences(processed_job_titles)
+    jobCounter = Counter(job_titles)
+    modCounter = Counter(mods)
+
+
+    print(jobCounter)

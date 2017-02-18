@@ -9758,7 +9758,6 @@ Juggler
 Juiceman
 Jumper
 Jumper, show
-Junior, office
 Justice of the Peace
 Keeker
 Keeper
@@ -17651,10 +17650,6 @@ Seller, space
 Seller, ticket
 Sempstress
 SEN
-Senior, audit
-Senior, tax
-Senior, taxation
-Senior, trust
 Sensitiser, film
 SEO
 Separator
