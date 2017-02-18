@@ -1,8 +1,6 @@
-#!/usr/bin/env python
-import re
-
 import nltk
-from collections import Counter
+
+from cleaning_functions import pandas_vector_to_list
 from data_extractor.data_getter import DataGetter
 
 
@@ -11,18 +9,22 @@ nltk.download('wordnet')
 nltk.download('punkt')
 
 
-def pre_process_job_titles():
+def _pre_process_job_titles(job_titles):
     """
     Process the list of job titles in the CSV training data, doing minor modifications to it,
     namely, remove cities and stop words.
     :return: A string with each word separated by a space for the most part. slashes may live.
     """
-    job_titles = DataGetter.get_raw_training_data("Title")
     cached_stop_words = set(DataGetter.get_stop_word_inc_cities())  # set is faster in loop below
     job_title_processed = []
     for job_title in job_titles:
+        if not isinstance(job_title, str):
+            # there exists a float somewhere!
+            job_title = str(job_title)
         title = nltk.word_tokenize(job_title)
-        removed_stop_title = " ".join([word.lower() for word in title if word.lower() not in cached_stop_words])
+        removed_stop_title = " ".join(
+            [word.lower() for word in title if word.lower() not in cached_stop_words]
+        )
         job_title_processed.append(removed_stop_title)
     return job_title_processed
 
@@ -114,12 +116,14 @@ def get_stemmed_sorted_role_and_modifiers(title):
     )
 
 
-def get_stemmed_sentences(processed_job_titles):
+def get_stemmed_sentences(raw_job_titles):
     """
     get two vectors which are the processed job titles and modifiers to use for ML
-    :return: Vectors with the processed/stemmed datas.
+    :raw_job_titles: the job titles pandas data frame that holds our job title data
+    :return: Vectors with the processed/stemmed sentences.
     """
-
+    # process/clean up the raw job titles passed to us from the core code.
+    processed_job_titles = _pre_process_job_titles(pandas_vector_to_list(raw_job_titles))
     # get official roles and modifiers sets:
     official_unique_jobs, official_unique_modifiers = process_actual_jobs_list()
     # set up our english snowball stemmer
@@ -141,12 +145,3 @@ def get_stemmed_sentences(processed_job_titles):
         mapped_modifiers.append(' '.join(sorted_mod_stem))
 
     return mapped_titles, mapped_modifiers
-
-if __name__ == "__main__":
-    processed_job_titles = pre_process_job_titles()
-    job_titles, mods = get_stemmed_sentences(processed_job_titles)
-    jobCounter = Counter(job_titles)
-    modCounter = Counter(mods)
-
-
-    print(jobCounter)
