@@ -1,9 +1,11 @@
 import string
+
+import RAKE
+import numpy as np
 import operator
 from collections import Counter
-import RAKE
 from sklearn.feature_extraction.text import TfidfVectorizer
-import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
 
 JOB_DESCRIPTION_FIELD = 'FullDescription'
 
@@ -31,6 +33,8 @@ def get_one_hot_encoded_words(feature_to_extract):
 
 
 def get_feature_word_count(column_to_count):
+    # TODO: this function is never used, remove?
+    # TODO: this entire function can be implemented in a single line using a count vectorizer
     count_dict = {}
     for data in column_to_count.iterrows():
         string_data = str(data)
@@ -54,6 +58,58 @@ def get_feature_word_count(column_to_count):
     count_dict = sorted(count_dict.items(), key=operator.itemgetter(0))
     # Returns a list of tuples which has word:count
     return count_dict
+
+
+def get_tfidf_similarity(corpus, queries):
+    """
+    calculate cosine similarity using tf.if between corpus an queries
+
+    :param corpus: list of text
+    :param queries: list of text
+    :return: matrix of ONLY corpus x query similarities
+    """
+
+    # # easier to test with smaller data set
+    # # use this to overwrite the incoming corpus/queries
+    # corpus = ['bob is in the house', 'susi goes to school', 'et tu brutu']
+    # queries = ['where is the school', 'bob is in the house']
+
+    tfidf_vectorizer = TfidfVectorizer()
+    tfidf_vectorizer.fit(corpus, queries)
+    corpus_vector = tfidf_vectorizer.transform(corpus)
+    queries_vector = tfidf_vectorizer.transform(queries)
+
+    similarity = cosine_similarity(queries_vector, corpus_vector)
+
+    # TODO: we can not use _vectorize here, because of the need of using the same vectorizer
+    # either rewrite it or remove it entirely, if get_top_idf_features is not going to be used
+    # corpus_len = len(corpus)
+    # queries_len = len(queries)
+
+    # we have to calculate the similarity for corpus + query to avoid dimension mismatch
+    # but we are only interested in the similarity of queries and documents
+    # remove all corpus x corpus similarities
+    # similarity = similarity[-queries_len:]
+    # remove all query x query similarities
+    # similarity = numpy.delete(similarity, range(corpus_len, corpus_len + queries_len), 1)
+
+    return similarity
+
+
+def extract_relevant_documents(similarity, sim_threshold=0.8):
+    """
+    return relevant documents from similarity matrix
+
+    :param similarity: similarity matrix from get_tfidf_similarity()
+    :param sim_threshold: cutoff thershold for relevant document (0.8) by default
+    :return: dict of (document_index, similarity) for every query from similarity matrix
+    """
+    relevant_documents = {}
+    for query_index, similarity_list in enumerate(similarity):
+        for document_index, similarity_score in enumerate(similarity_list):
+            if similarity_score > sim_threshold:
+                relevant_documents[query_index] = (document_index, similarity_score)
+    return relevant_documents
 
 
 def get_rake_keywords(job_description):
@@ -105,14 +161,12 @@ def _build_idf_dict(tfidf_vectorizer):
     return idf_dict
 
 
-def _vectorize(job_description):
+def _vectorize(job_description_list, tfidf_vectorizer=TfidfVectorizer()):
     """
     vectorize job_descriptoins using tfidf
 
-    :param job_description: data_frame
+    :param job_description: list of text
     :return: (vectorizer, term_vector)
     """
-    tfidf_vectorizer = TfidfVectorizer()
-    job_description_list = job_description[JOB_DESCRIPTION_FIELD].values.tolist()
     term_vector = tfidf_vectorizer.fit_transform(job_description_list)
     return tfidf_vectorizer, term_vector
