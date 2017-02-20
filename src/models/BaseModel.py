@@ -38,7 +38,7 @@ class BaseModel:
         if load_location:
             normalized_location_data = pd.read_csv(train_normalized_location_file_name)
             train_normalized_location_data = normalized_location_data[: self.training_dataset_size]
-            test_normalized_location_data = normalized_location_data[-self.test_dataset_size:]
+            # test_normalized_location_data = normalized_location_data[-self.test_dataset_size:]
 
             self.cleaned_town_feature = train_normalized_location_data[['town']]
             self.cleaned_region_feature = train_normalized_location_data[['region']]
