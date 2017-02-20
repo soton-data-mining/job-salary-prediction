@@ -1,5 +1,8 @@
+#!/usr/bin/env python
+
 import pandas as pd
 
+from job_titles_feature_extraction import get_stemmed_sentences
 from job_description_feature_extraction import (get_one_hot_encoded_words,
                                                 get_rake_keywords,
                                                 get_top_idf_features)
@@ -50,6 +53,15 @@ if __name__ == "__main__":
     cleaned_binary_encoded_town = get_binary_encoded_feature(updated_town_feature)
     # Region: Binary encoded
     cleaned_binary_encoded_region = get_binary_encoded_feature(updated_region_feature)
+
+    # get stemmed/sorted job title and job title modifiers
+
+    processed_job_titles, processed_job_modifiers = get_stemmed_sentences(
+        train_raw_data[['Title']]
+    )
+
+    train_binary_encoded_job_titles = get_binary_encoded_feature(processed_job_titles)
+    train_binary_encoded_job_modifiers = get_binary_encoded_feature(processed_job_modifiers)
 
     keywords = get_rake_keywords(train_description_feature)
     # one_hot_encoded_features are a list of 5 lists consisting of 1s and 0s

@@ -1,4 +1,5 @@
 flake8>=3.2.1
+nltk==3.2.2
 numpy>=1.11.2
 pandas>=0.19.1
 geopy>=1.11.0
