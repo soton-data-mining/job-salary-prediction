@@ -1,4 +1,5 @@
 import pandas as pd
+import re
 
 
 def pandas_vector_to_list(pandas_df):
@@ -70,3 +71,31 @@ def update_location(location_raw, cleaned_location):
                 # print('Found:', list_location_raw[index], ' Updated: ', matched_town)
     # print(update_count)
     return list_cleaned_location
+
+
+def remove_sub_string(sub_string, feature, remove_preceding_white_space=True):
+    """
+    Auxiliary function for removing a substring from a feature
+    E.g. In category: Sales Jobs -> Sales
+
+    :param sub_string: the substring you would like to remove
+    :param feature: the feature to remove the substring from
+    :param remove_preceding_white_space: Defaults to True
+    :return: feature list with the substring removed
+    """
+    # Guard against non-lists
+    if isinstance(feature, list):
+        feature_as_list = feature
+    else:
+        feature_as_list = pandas_vector_to_list(feature)
+
+    white_space_matcher = '\s'
+    if not remove_preceding_white_space:
+        white_space_matcher = ''
+
+    feature_with_removed_sub_string = [
+        re.sub(white_space_matcher + sub_string, '', row, flags=re.I) for row
+        in feature_as_list
+    ]
+
+    return feature_with_removed_sub_string
