@@ -18,4 +18,4 @@ class StandaloneSimilarity(BaseModel):
         isinstance(relevant_documents, int)
 
         # return predictions, random variable for now
-        return [random.randrange(20000, 30000)] * self.test_dataset_size
+        return [random.randrange(20000, 30000)] * self.test_data_size

@@ -41,7 +41,7 @@ class OldMainMethod(BaseModel):
         # get stemmed/sorted job title and job title modifiers
 
         processed_job_titles, processed_job_modifiers = get_stemmed_sentences(
-            self.train_raw_data[['Title']]
+            self.train_data[['Title']]
         )
 
         train_binary_encoded_job_titles = get_binary_encoded_feature(processed_job_titles)
@@ -70,4 +70,4 @@ class OldMainMethod(BaseModel):
         isinstance(keywords, int)
         isinstance(top_keywords, int)
 
-        return [0] * self.test_dataset_size
+        return [0] * self.test_data_size

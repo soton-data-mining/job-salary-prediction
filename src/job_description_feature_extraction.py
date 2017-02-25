@@ -137,7 +137,7 @@ def get_top_idf_features(job_description, k):
     :return: list of k top features
     """
     # based on https://stackoverflow.com/questions/25217510/
-    tfidf_vectorizer, term_vector = _vectorize(job_description)
+    tfidf_vectorizer, term_vector = _tfidf_vectorize(job_description)
     # use _build_idf_dict to get a {term: score} dictionary which was the whole point here
     # but it makes the build fail because of unused variables so yea
     # idf_dict = _build_idf_dict(tfidf_vectorizer)
@@ -148,10 +148,10 @@ def get_top_idf_features(job_description, k):
 
 def _build_idf_dict(tfidf_vectorizer):
     """
-    builds a dictionarry of all terms
+    builds a dictionary of all terms
 
     :param tfidf_vectorizer
-    :return: dictrionary in form of {term: score}
+    :return: dictionary in form of {term: score}
     """
     idf_dict = {}
     features = tfidf_vectorizer.get_feature_names()
@@ -161,9 +161,9 @@ def _build_idf_dict(tfidf_vectorizer):
     return idf_dict
 
 
-def _vectorize(job_description_list, tfidf_vectorizer=TfidfVectorizer()):
+def _tfidf_vectorize(job_description_list, tfidf_vectorizer=TfidfVectorizer()):
     """
-    vectorize job_descriptoins using tfidf
+    vectorize job_descriptions using tfidf
 
     :param job_description: list of text
     :return: (vectorizer, term_vector)
