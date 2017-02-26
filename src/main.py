@@ -5,10 +5,12 @@ import pandas as pd
 from job_titles_feature_extraction import get_stemmed_sentences
 from job_description_feature_extraction import (get_one_hot_encoded_words,
                                                 get_rake_keywords,
-                                                get_top_idf_features)
+                                                get_top_idf_features,
+                                                get_tfidf_similarity,
+                                                extract_relevant_documents)
 from cleaning_functions import (get_one_hot_encoded_feature,
                                 get_binary_encoded_feature,
-                                update_location)
+                                update_location, pandas_vector_to_list)
 
 train_raw_data_csv_file_name = '../data/Train_rev1.csv'
 train_normalized_location_file_name = '../data/train_normalised_location.csv'
@@ -16,6 +18,7 @@ test_raw_data_csv_file_name = '../data/Test_rev1.csv'
 
 if __name__ == "__main__":
     train_raw_data = pd.read_csv(train_raw_data_csv_file_name)
+    test_raw_data = pd.read_csv(test_raw_data_csv_file_name)
     train_normalized_location_data = pd.read_csv(train_normalized_location_file_name)
 
     train_description_feature = train_raw_data[['FullDescription']]
@@ -25,6 +28,8 @@ if __name__ == "__main__":
     train_company_feature = train_raw_data[['Company']]
     train_source_name_feature = train_raw_data[['SourceName']]
     train_location_raw_feature = train_raw_data[['LocationRaw']]
+
+    test_description_feature = test_raw_data[['FullDescription']]
 
     cleaned_town_feature = train_normalized_location_data[['town']]
     cleaned_region_feature = train_normalized_location_data[['region']]
@@ -72,3 +77,10 @@ if __name__ == "__main__":
     # get top k terms with the highest idf score (this is atm not very useful
     # but it will be used for the tf.idf similarity stuff
     top_keywords = get_top_idf_features(train_description_feature, 5)
+
+    # calculate similarity between train an testset job descriptions
+    # this is of high order complexity - test it on a subset of the data
+    corpus_list = pandas_vector_to_list(train_description_feature)
+    queries_list = pandas_vector_to_list(test_description_feature)
+    similarity = get_tfidf_similarity(corpus_list, queries_list)
+    relevant_documents = extract_relevant_documents(similarity)
