@@ -6,9 +6,9 @@ import operator
 from collections import Counter
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.neighbors import NearestNeighbors
 
 JOB_DESCRIPTION_FIELD = 'FullDescription'
-
 STOP_WORDS_PATH = "../preprocessing_data/smartstop.txt"
 
 
@@ -60,40 +60,36 @@ def get_feature_word_count(column_to_count):
     return count_dict
 
 
-def get_tfidf_similarity(corpus, queries):
+def calc_cosine_sim(corpus_vector, queries_vector):
     """
-    calculate cosine similarity using tf.if between corpus an queries
+    calculate cosine similarity given tf.idf vectors of corpus an queries
 
-    :param corpus: list of text
-    :param queries: list of text
+    :param corpus_vector: vectorized  ext
+    :param queries_vector: vectorized text
     :return: matrix of ONLY corpus x query similarities
     """
-
-    # # easier to test with smaller data set
-    # # use this to overwrite the incoming corpus/queries
-    # corpus = ['bob is in the house', 'susi goes to school', 'et tu brutu']
-    # queries = ['where is the school', 'bob is in the house']
-
-    tfidf_vectorizer = TfidfVectorizer()
-    tfidf_vectorizer.fit(corpus, queries)
-    corpus_vector = tfidf_vectorizer.transform(corpus)
-    queries_vector = tfidf_vectorizer.transform(queries)
-
     similarity = cosine_similarity(queries_vector, corpus_vector)
-
-    # TODO: we can not use _vectorize here, because of the need of using the same vectorizer
-    # either rewrite it or remove it entirely, if get_top_idf_features is not going to be used
-    # corpus_len = len(corpus)
-    # queries_len = len(queries)
-
-    # we have to calculate the similarity for corpus + query to avoid dimension mismatch
-    # but we are only interested in the similarity of queries and documents
-    # remove all corpus x corpus similarities
-    # similarity = similarity[-queries_len:]
-    # remove all query x query similarities
-    # similarity = numpy.delete(similarity, range(corpus_len, corpus_len + queries_len), 1)
-
     return similarity
+
+
+def document_knn(corpus_vector, queries_vector, k=10):
+    """
+
+    :param corpus_vector: vectorized document text
+    :param queries_vector: vectorized query text
+    :param k: number of neighbours
+    :return:
+    """
+    # based on
+    # http://scikit-learn.org/stable/modules/neighbors.html
+    # http://scikit-learn.org/stable/modules/generated/sklearn.neighbors.NearestNeighbors.html
+
+    # since we want to use cosine similarity to account for document length
+    # we have to use bruteforce search
+    # parallelize to number of cores with n_jobs -1
+    nbrs = NearestNeighbors(n_neighbors=k, algorithm='brute', metric='cosine', n_jobs=-1).fit(corpus_vector)
+    distances, indices = nbrs.kneighbors(queries_vector)
+    return distances, indices
 
 
 def extract_relevant_documents(similarity, sim_threshold=0.8):
@@ -137,7 +133,8 @@ def get_top_idf_features(job_description, k):
     :return: list of k top features
     """
     # based on https://stackoverflow.com/questions/25217510/
-    tfidf_vectorizer, term_vector = _tfidf_vectorize(job_description)
+    tfidf_vectorizer, term_vector, foo = tfidf_vectorize(job_description)
+
     # use _build_idf_dict to get a {term: score} dictionary which was the whole point here
     # but it makes the build fail because of unused variables so yea
     # idf_dict = _build_idf_dict(tfidf_vectorizer)
@@ -161,12 +158,24 @@ def _build_idf_dict(tfidf_vectorizer):
     return idf_dict
 
 
-def _tfidf_vectorize(job_description_list, tfidf_vectorizer=TfidfVectorizer()):
+def tfidf_vectorize(documents, queries=[''], tfidf_vectorizer=TfidfVectorizer(stop_words='english', lowercase=True)):
     """
     vectorize job_descriptions using tfidf
 
-    :param job_description: list of text
-    :return: (vectorizer, term_vector)
+    :param documents: list of text (training_data
+    :param queries: list of text (test data) - can be empty [''] (default)
+        in case we just want to vectorize a single corpus
+    :param tfidf_vectorizer: to overwrite with an existing/trained vectorizer
+        or different parameters
+    :return: (tfidf_vectorizer, document_vector, queries_vector)
     """
-    term_vector = tfidf_vectorizer.fit_transform(job_description_list)
-    return tfidf_vectorizer, term_vector
+
+    # # easier to test with smaller data set
+    # # use this to overwrite the incoming corpus/queries
+    # corpus = ['bob is in the house', 'susi goes to school', 'et tu brutu']
+    # queries = ['where is the school', 'bob is in the house']
+
+    tfidf_vectorizer.fit(documents, queries)
+    document_vector = tfidf_vectorizer.transform(documents)
+    queries_vector = tfidf_vectorizer.transform(queries)
+    return tfidf_vectorizer, document_vector, queries_vector
