@@ -8,7 +8,6 @@ from multiprocessing import Pool
 import geopy
 import pandas as pd
 
-
 GOOGLE_API_KEY = "AIzaSyDtcYWNxzjjZRZrkPPAxEgrGD78Ey7pc50"
 
 
@@ -101,7 +100,7 @@ if __name__ == "__main__":
     with Pool(20) as p:
         locs = []
         for i in range(0, len(indices) - 1):
-            location_strings = df["LocationRaw"][indices[i]:indices[i+1]]
+            location_strings = df["LocationRaw"][indices[i]:indices[i + 1]]
             loc_batch = p.map(get_loc, location_strings)
             locs.extend(loc_batch)
             print("{nlocs} locations queried".format(nlocs=len(locs)))
