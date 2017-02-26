@@ -1,5 +1,5 @@
-import pandas as pd
 import re
+import pandas as pd
 
 
 def pandas_vector_to_list(pandas_df):
