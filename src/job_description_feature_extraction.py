@@ -4,6 +4,7 @@ import RAKE
 import numpy as np
 import operator
 from collections import Counter
+from collections import defaultdict
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -102,13 +103,13 @@ def extract_relevant_documents(similarity, sim_threshold=0.8):
 
     :param similarity: similarity matrix from get_tfidf_similarity()
     :param sim_threshold: cutoff thershold for relevant document (0.8) by default
-    :return: dict of (document_index, similarity) for every query from similarity matrix
+    :return: dict of [(document_index, similarity)] for every query from similarity matrix
     """
-    relevant_documents = {}
+    relevant_documents = defaultdict(list)
     for query_index, similarity_list in enumerate(similarity):
         for document_index, similarity_score in enumerate(similarity_list):
             if similarity_score > sim_threshold:
-                relevant_documents[query_index] = (document_index, similarity_score)
+                relevant_documents[query_index].append((document_index, similarity_score))
     return relevant_documents
 
 
@@ -148,10 +149,10 @@ def get_top_idf_features(job_description, k):
 
 def _build_idf_dict(tfidf_vectorizer):
     """
-    builds a dictionarry of all terms
+    builds a dictionary of all terms
 
     :param tfidf_vectorizer
-    :return: dictrionary in form of {term: score}
+    :return: dictionary in form of {term: score}
     """
     idf_dict = {}
     features = tfidf_vectorizer.get_feature_names()
