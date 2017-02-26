@@ -11,7 +11,7 @@ class StandaloneSimilarity(BaseModel):
         # this is of high order complexity - test it on a subset of the data
         corpus_list = pandas_vector_to_list(self.train_description_feature)
         queries_list = pandas_vector_to_list(self.test_description_feature)
-        similarity = get_tfidf_similarity(corpus_list[:100], queries_list[-100:])
+        similarity = get_tfidf_similarity(corpus_list, queries_list)
         relevant_documents = extract_relevant_documents(similarity)
 
         # no-op functions to avoid pep8 "unused variable" error

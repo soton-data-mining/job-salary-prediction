@@ -16,9 +16,12 @@ class BaseModel(object):
 
     def __init__(self, train_data_csv_file_name=TRAIN_DATA_CSV_FILE_NAME,
                  train_normalized_location_file_name=TRAIN_NORMALIZED_LOCATION_FILE_NAME,
-                 train_test_ratio=0.8, load_location=False):
+                 train_size=0.8, test_size=None, load_location=False):
         """
-        :param train_test_ratio: ratio of how much is training/test data
+        :param train_size: can be either a float or int
+            - float: ratio of how much is training/test data
+            - int: for total size
+        :param test_size: see train_size
         :param load_location: boolean, true if we want to load and process the normalized location
         """
         if BaseModel.data is None:
@@ -27,7 +30,8 @@ class BaseModel(object):
         # split original training dataset into train and test data
         # since we most likely wont get the test salary
         self.train_data, self.test_data = train_test_split(BaseModel.data,
-                                                           train_size=train_test_ratio)
+                                                           train_size=train_size,
+                                                           test_size=test_size)
         self.training_data_size = len(self.train_data)
         self.test_data_size = len(self.test_data)
 
