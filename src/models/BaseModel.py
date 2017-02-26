@@ -29,9 +29,13 @@ class BaseModel(object):
 
         # split original training dataset into train and test data
         # since we most likely wont get the test salary
+
+        # use random_state=0 to compare models
+        # its still random, but the same for every model
         self.train_data, self.test_data = train_test_split(BaseModel.data,
                                                            train_size=train_size,
-                                                           test_size=test_size)
+                                                           test_size=test_size,
+                                                           random_state=0)
         self.training_data_size = len(self.train_data)
         self.test_data_size = len(self.test_data)
 
@@ -103,7 +107,7 @@ class BaseModel(object):
         """
         truth = self.get_truth()
         error = sklearn.metrics.mean_absolute_error(truth, predicted_salary)
-        print("Mean Absolute Error: {}".format(error))
+        print("{} - Mean Absolute Error: {}".format(self.__class__.__name__, error))
         return error
 
     def get_truth(self):
