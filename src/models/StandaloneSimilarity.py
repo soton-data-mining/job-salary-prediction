@@ -1,6 +1,6 @@
 from cleaning_functions import pandas_vector_to_list
 from job_description_feature_extraction import (tfidf_vectorize,
-                                                document_knn)
+                                                cosine_knn)
 from models.BaseModel import BaseModel
 
 
@@ -15,7 +15,7 @@ class StandaloneSimilarity(BaseModel):
         # similarity = calc_cosine_sim(corpus_vector, queries_vector)
         # relevant_documents = extract_relevant_documents(similarity)
 
-        distances, indices = document_knn(corpus_vector, queries_vector)
+        distances, indices = cosine_knn(corpus_vector, queries_vector)
 
         prediction = []
         for distance, index_list in zip(distances, indices):

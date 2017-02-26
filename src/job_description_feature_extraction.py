@@ -73,13 +73,13 @@ def calc_cosine_sim(corpus_vector, queries_vector):
     return similarity
 
 
-def document_knn(corpus_vector, queries_vector, k=10):
+def cosine_knn(corpus_vector, queries_vector, k=10):
     """
 
     :param corpus_vector: vectorized document text
     :param queries_vector: vectorized query text
     :param k: number of neighbours
-    :return:
+    :return: (distances, indices) of knn
     """
     # based on
     # http://scikit-learn.org/stable/modules/neighbors.html
