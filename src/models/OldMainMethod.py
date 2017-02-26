@@ -1,6 +1,7 @@
 from cleaning_functions import (get_one_hot_encoded_feature,
                                 get_binary_encoded_feature,
-                                update_location)
+                                update_location,
+                                remove_sub_string)
 from job_description_feature_extraction import (get_one_hot_encoded_words,
                                                 get_rake_keywords,
                                                 get_top_idf_features)
@@ -47,6 +48,11 @@ class OldMainMethod(BaseModel):
         train_binary_encoded_job_titles = get_binary_encoded_feature(processed_job_titles)
         train_binary_encoded_job_modifiers = get_binary_encoded_feature(processed_job_modifiers)
 
+        # Remove superfluous 'Jobs' from job category
+        processed_category_feature = remove_sub_string('Jobs', self.train_category_feature)
+        # Job category: Binary encoded
+        train_binary_encoded_categories = get_binary_encoded_feature(processed_category_feature)
+
         keywords = get_rake_keywords(self.train_description_feature)
         # one_hot_encoded_features are a list of 5 lists consisting of 1s and 0s
         # If a word appears in the description, this kind of representation will
@@ -69,5 +75,6 @@ class OldMainMethod(BaseModel):
         isinstance(train_binary_encoded_job_modifiers, int)
         isinstance(keywords, int)
         isinstance(top_keywords, int)
+        isinstance(train_binary_encoded_categories, int)
 
         return [0] * self.test_data_size
