@@ -22,7 +22,7 @@ class BaseModel(object):
     TRAIN_DATA_CSV_FILE_NAME = '../data/Train_rev1.csv'
     CLEANED_FILE_NAME = '../data/Preprocessed_Data.csv'
 
-    def __init__(self, train_size = 0.75):
+    def __init__(self, train_size=0.75):
         print('Initialized BaseModel')
         if os.path.exists(BaseModel.CLEANED_FILE_NAME):
             print('Pre-processed data exists, reading from the file')
@@ -54,7 +54,8 @@ class BaseModel(object):
 
         print('Splitting train and test')
         self.train_data, self.test_data = train_test_split(self.cleaned_encoded_data,
-            train_size= train_size, random_state = 9)  # Because 9 is good
+                                                           train_size=train_size, random_state=9)
+        # Because 9 is good
         # Random state is there so that train and test is always the same for everyone
         self.x_train = self.train_data[:, 0:self.train_data.shape[1] - 1]
         self.y_train = self.train_data[:, self.train_data.shape[1] - 1]
