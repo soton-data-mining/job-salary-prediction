@@ -1,7 +1,10 @@
+"""
 import random
 
 from cleaning_functions import pandas_vector_to_list
 from job_description_feature_extraction import get_tfidf_similarity, extract_relevant_documents
+
+"""
 from models.BaseModel import BaseModel
 
 

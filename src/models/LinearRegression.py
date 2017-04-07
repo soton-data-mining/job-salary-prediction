@@ -1,6 +1,7 @@
 from models.BaseModel import BaseModel
 from sklearn import linear_model
 
+
 class LinearRegression(BaseModel):
     def predict(self):
         regr = linear_model.LinearRegression()

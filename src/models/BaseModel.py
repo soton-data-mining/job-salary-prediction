@@ -51,17 +51,16 @@ class BaseModel(object):
             self.export_data(self.processed_data, 'Preprocessed_Data')
             self.export_data(self.feature_list, 'Feature_List')
             self.cleaned_encoded_data = self.load_cleaned_data()
-        
+
         print('Splitting train and test')
         self.train_data, self.test_data = train_test_split(self.cleaned_encoded_data,
-                                                           train_size= train_size,
-                                                           random_state= 9)  # Because 9 is good
+            train_size= train_size, random_state = 9)  # Because 9 is good
         # Random state is there so that train and test is always the same for everyone
-        self.x_train = self.train_data[:,0:self.train_data.shape[1]- 1]
-        self.y_train = self.train_data[:,self.train_data.shape[1]- 1]
+        self.x_train = self.train_data[:, 0:self.train_data.shape[1] - 1]
+        self.y_train = self.train_data[:, self.train_data.shape[1] - 1]
 
-        self.x_test = self.test_data[:,0:self.test_data.shape[1]- 1]
-        self.y_test = self.test_data[:,self.test_data.shape[1]- 1]
+        self.x_test = self.test_data[:, 0:self.test_data.shape[1] - 1]
+        self.y_test = self.test_data[:, self.test_data.shape[1] - 1]
         print('Train test split complete \n')
 
     def preprocess_data(self):
@@ -88,7 +87,7 @@ class BaseModel(object):
                                                  self.cleaned_region_feature)
         binary_encoded_region = get_binary_encoded_feature(updated_region_feature)
         # Job titles and modifiers: Binary encoded
-        
+
         processed_job_titles, processed_job_modifiers = get_stemmed_sentences(
             self.title_feature
         )
@@ -113,16 +112,16 @@ class BaseModel(object):
         ))
         concatanated_features = np.transpose(concatanated_features)
 
-        feature_list = [('desc_words',len(onehot_encoded_desc_words)),
-                        ('contract_type',len(onehot_encoded_contract_type)),
-                        ('contract_time',len(onehot_encoded_contract_time)),
-                        ('company',len(binary_encoded_company)),
-                        ('source',len(binary_encoded_source)),
-                        ('town',len(binary_encoded_town)),
-                        ('region',len(binary_encoded_region)),
-                        ('job_titles',len(binary_encoded_job_titles)),
-                        ('job_modifiers',len(binary_encoded_job_modifiers)),
-                        ('categories',len(binary_encoded_categories)),
+        feature_list = [('desc_words', len(onehot_encoded_desc_words)),
+                        ('contract_type', len(onehot_encoded_contract_type)),
+                        ('contract_time', len(onehot_encoded_contract_time)),
+                        ('company', len(binary_encoded_company)),
+                        ('source', len(binary_encoded_source)),
+                        ('town', len(binary_encoded_town)),
+                        ('region', len(binary_encoded_region)),
+                        ('job_titles', len(binary_encoded_job_titles)),
+                        ('job_modifiers', len(binary_encoded_job_modifiers)),
+                        ('categories', len(binary_encoded_categories)),
                         ]
 
         print('Pre-processing ends \n')
@@ -130,7 +129,7 @@ class BaseModel(object):
 
     @staticmethod
     def export_data(list_to_write, file_name):
-        print('Exporting data to ../data/Cleaned_Results.csv') 
+        print('Exporting data to ../data/Cleaned_Results.csv')
         print('Will read from there next time to avoid pre-processing')
         f = open('../data/'+file_name+'.csv', 'a')
         for list in list_to_write:
@@ -147,17 +146,20 @@ class BaseModel(object):
         loads all data into the static set
         """
         BaseModel.data = pd.read_csv(BaseModel.TRAIN_DATA_CSV_FILE_NAME)
-        BaseModel.normalized_location_data = pd.read_csv(BaseModel.TRAIN_NORMALIZED_LOCATION_FILE_NAME)
+        BaseModel.normalized_location_data = pd.read_csv(
+            BaseModel.TRAIN_NORMALIZED_LOCATION_FILE_NAME)
 
     @staticmethod
     def load_cleaned_data():
         loaded_data = pd.read_csv(BaseModel.CLEANED_FILE_NAME, header=None)
-        loaded_data = loaded_data.iloc[:,0:loaded_data.shape[1]-1]  # For some reason there is a 'nan' column at the end
+        loaded_data = loaded_data.iloc[:, 0:loaded_data.shape[1]-1]
+        # For some reason there is a 'nan' column at the end
         loaded_data = loaded_data.as_matrix()
         loaded_data = loaded_data.astype(int)
         return loaded_data
 
     abc.abstractmethod
+
     def predict(self):
         """
         #abstract method, where actual prediction will be implemented
