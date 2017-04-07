@@ -6,7 +6,8 @@ from models.BaseModel import BaseModel
 
 
 class StandaloneSimilarity(BaseModel):
-    def predict_salary(self):
+    def predict(self):
+        """
         # calculate similarity between train an testset job descriptions
         # this is of high order complexity - test it on a subset of the data
         corpus_list = pandas_vector_to_list(self.train_description_feature)
@@ -19,3 +20,5 @@ class StandaloneSimilarity(BaseModel):
 
         # return predictions, random variable for now
         return [random.randrange(20000, 30000)] * self.test_data_size
+        """
+        return (self.y_train, self.y_test)
