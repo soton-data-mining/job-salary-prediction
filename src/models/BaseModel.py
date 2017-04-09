@@ -140,7 +140,7 @@ class BaseModel(object):
             f.write('\n')
         f.close()
         print('Exporting complete \n')
-    
+
     @staticmethod
     def export_prediction(prediction_to_write, file_name):
         print('Exporting prediction to ../predictions/'+file_name)

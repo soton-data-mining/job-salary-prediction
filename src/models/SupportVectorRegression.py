@@ -1,6 +1,7 @@
 from models.BaseModel import BaseModel
 import sklearn.svm as SVM
 
+
 class SVR(BaseModel):
     def predict(self):
         print('Support Vector Regression training begins')

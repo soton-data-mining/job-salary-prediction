@@ -8,8 +8,8 @@ if __name__ == "__main__":
     SupportVectorRegressionModel = SVR()
     SupportVectorRegressionModel.run()
     
-    #LinearRegressionModel = LinearRegression()
-    #LinearRegressionModel.run()
+    LinearRegressionModel = LinearRegression()
+    LinearRegressionModel.run()
 
-    #StandaloneSim = StandaloneSimilarity()
-    #StandaloneSim.run()
+    StandaloneSim = StandaloneSimilarity()
+    StandaloneSim.run()
