@@ -130,13 +130,23 @@ class BaseModel(object):
 
     @staticmethod
     def export_data(list_to_write, file_name):
-        print('Exporting data to ../data/Cleaned_Results.csv')
+        print('Exporting data to ../data/'+file_name)
         print('Will read from there next time to avoid pre-processing')
         f = open('../data/'+file_name+'.csv', 'a')
         for list in list_to_write:
             for item in list:
                 f.write(str(item))
                 f.write(',')
+            f.write('\n')
+        f.close()
+        print('Exporting complete \n')
+    
+    @staticmethod
+    def export_prediction(prediction_to_write, file_name):
+        print('Exporting prediction to ../predictions/'+file_name)
+        f = open('../predictions/'+file_name+'.csv', 'a')
+        for item in prediction_to_write:
+            f.write(str(item))
             f.write('\n')
         f.close()
         print('Exporting complete \n')

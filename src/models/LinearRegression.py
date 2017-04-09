@@ -8,4 +8,5 @@ class LinearRegression(BaseModel):
         regr.fit(self.x_train, self.y_train)
         train_result = regr.predict(self.x_train)
         test_result = regr.predict(self.x_test)
+        BaseModel.export_prediction(test_result, 'LinearRegression.csv')
         return (train_result, test_result)
