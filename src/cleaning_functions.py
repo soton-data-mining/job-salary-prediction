@@ -1,5 +1,5 @@
-import re
 import pandas as pd
+import re
 
 
 def pandas_vector_to_list(pandas_df):
@@ -86,7 +86,8 @@ def update_location(location_raw, cleaned_location):
     return list_cleaned_location
 
 
-def remove_sub_string(sub_string, feature, remove_preceding_white_space=True):
+def remove_sub_string(sub_string, feature, remove_preceding_white_space=True,
+                      replacement_string=''):
     """
     Auxiliary function for removing a substring from a feature
     E.g. In category: Sales Jobs -> Sales
@@ -94,6 +95,7 @@ def remove_sub_string(sub_string, feature, remove_preceding_white_space=True):
     :param sub_string: the substring you would like to remove
     :param feature: the feature to remove the substring from
     :param remove_preceding_white_space: Defaults to True
+    :param replacement_string: string to use for substitution - defaults to ''
     :return: feature list with the substring removed
     """
     # Guard against non-lists
@@ -102,13 +104,16 @@ def remove_sub_string(sub_string, feature, remove_preceding_white_space=True):
     else:
         feature_as_list = pandas_vector_to_list(feature)
 
-    white_space_matcher = '\s'
+    # optional whitespace (?)
+    white_space_matcher = '\s?'
     if not remove_preceding_white_space:
         white_space_matcher = ''
 
-    feature_with_removed_sub_string = [
-        re.sub(white_space_matcher + sub_string, '', row, flags=re.I) for row
-        in feature_as_list
-    ]
+    # compile re outside of list comprehension
+    regex = re.compile(white_space_matcher + sub_string, flags=re.I)
+
+    feature_with_removed_sub_string = [regex.sub(replacement_string, row) if isinstance(row, str)
+                                       else ''  # return default string for NANs
+                                       for row in feature_as_list]
 
     return feature_with_removed_sub_string

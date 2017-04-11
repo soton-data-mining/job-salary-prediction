@@ -129,12 +129,14 @@ def get_rake_keywords(job_description):
     return keywords
 
 
-def get_top_idf_features(job_description, k):
+def get_top_idf_features(job_description, k, order=-1):
     """
     use TfIdf to extract top k keywords of corpus
 
     :param job_description: data frame
-    :param k: number of
+    :param k: number of top features
+    :param order: sort order of idf features (least or most significant features)
+        defaults to -1 = most significant features
     :return: list of k top features
     """
     # based on https://stackoverflow.com/questions/25217510/
@@ -142,7 +144,7 @@ def get_top_idf_features(job_description, k):
     # use _build_idf_dict to get a {term: score} dictionary which was the whole point here
     # but it makes the build fail because of unused variables so yea
     # idf_dict = _build_idf_dict(tfidf_vectorizer)
-    idf_ranking = np.argsort(tfidf_vectorizer.idf_)[::-1]
+    idf_ranking = np.argsort(tfidf_vectorizer.idf_)[::order]
     features = tfidf_vectorizer.get_feature_names()
     return [features[i] for i in idf_ranking[:k]]
 
