@@ -8,7 +8,6 @@ from sklearn.model_selection import train_test_split
 from company_feature_extraction import clean_company_name
 from cleaning_functions import (get_one_hot_encoded_feature,
                                 get_binary_encoded_feature,
-                                get_label_encoded_feature,
                                 update_location,
                                 pandas_vector_to_list,
                                 remove_sub_string)
