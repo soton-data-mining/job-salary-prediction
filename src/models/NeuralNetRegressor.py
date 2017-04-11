@@ -22,7 +22,8 @@ class NeuralNetRegressor(BaseModel):
         model.compile(loss='mean_absolute_error', optimizer=rms, metrics=["accuracy"])
         # optimizer='adam'
         model.fit(self.x_train, self.y_train, validation_data=(self.x_test,
-            self.y_test), nb_epoch=50, batch_size=20000, verbose=1)
+            self.y_test), nb_epoch=50, batch_size=20000, verbose=1
+        )
 
         layer = model.layers[1]
         weights = layer.get_weights()
