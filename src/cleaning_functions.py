@@ -11,6 +11,19 @@ def get_bin(x, n):
     return format(x, 'b').zfill(n)
 
 
+def get_label_encoded_feature(feature):
+    if isinstance(feature, list):  # Input is list
+        feature_as_list = feature
+    else:  # Input is pandas df
+        feature_as_list = pandas_vector_to_list(feature)
+    feature_set = list(set(feature_as_list))  # Get unique values
+    label_encoded_feature = []
+    for item in feature_as_list:
+        encoding = feature_set.index(item)
+        label_encoded_feature.append(encoding)
+    return [label_encoded_feature]
+
+
 def get_one_hot_encoded_feature(feature):
     if isinstance(feature, list):  # Input is list
         feature_as_list = feature

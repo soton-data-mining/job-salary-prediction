@@ -7,6 +7,7 @@ from sklearn.model_selection import train_test_split
 
 from cleaning_functions import (get_one_hot_encoded_feature,
                                 get_binary_encoded_feature,
+                                get_label_encoded_feature,
                                 update_location,
                                 pandas_vector_to_list,
                                 remove_sub_string)
@@ -20,7 +21,7 @@ class BaseModel(object):
 
     TRAIN_NORMALIZED_LOCATION_FILE_NAME = '../data/train_normalised_location.csv'
     TRAIN_DATA_CSV_FILE_NAME = '../data/Train_rev1.csv'
-    CLEANED_FILE_NAME = '../data/Preprocessed_Data.csv'
+    CLEANED_FILE_NAME = '../data/Binary_Preprocessed_Data.csv-'
 
     def __init__(self, train_size=0.75):
         print('Initialized BaseModel')
@@ -46,7 +47,8 @@ class BaseModel(object):
             # Read cleaned locations from separate file, cleaned with Google location
             self.cleaned_town_feature = BaseModel.normalized_location_data[['town']]
             self.cleaned_region_feature = BaseModel.normalized_location_data[['region']]
-
+            self.processed_job_titles = []
+            self.processed_job_modifiers= []
             (self.processed_data, self.feature_list) = self.preprocess_data()
             self.export_data(self.processed_data, 'Preprocessed_Data')
             self.export_data(self.feature_list, 'Feature_List')
@@ -69,37 +71,37 @@ class BaseModel(object):
         print('Pre-processing begins')
         # Description: consisting of 5 features existence of words below in the description:
         # 'excellent', 'graduate', 'immediate', 'junior', 'urgent'
-        onehot_encoded_desc_words = get_one_hot_encoded_words(self.description_feature)
+        # onehot_encoded_desc_words = get_one_hot_encoded_words(self.description_feature)
         # Contract type: One hot encoded, 3 features: part time, full time, *is empty*
         onehot_encoded_contract_type = get_one_hot_encoded_feature(self.contract_type_feature)
         # Contract time: One hot encoded, 3 features: permanent, contract, *is empty*
         onehot_encoded_contract_time = get_one_hot_encoded_feature(self.contract_time_feature)
         # Company: Binary encoded
-        binary_encoded_company = get_binary_encoded_feature(self.company_feature)
+        binary_encoded_company = get_label_encoded_feature(self.company_feature)
         # Source name: Binary encoded
-        binary_encoded_source = get_binary_encoded_feature(self.source_name_feature)
+        binary_encoded_source = get_label_encoded_feature(self.source_name_feature)
         # Town: Binary encoded
         print('Pre-processing halfway done')
         updated_town_feature = update_location(self.location_raw_feature,
                                                self.cleaned_town_feature)
-        binary_encoded_town = get_binary_encoded_feature(updated_town_feature)
+        binary_encoded_town = get_label_encoded_feature(updated_town_feature)
         # Region: Binary encoded
         updated_region_feature = update_location(self.location_raw_feature,
                                                  self.cleaned_region_feature)
-        binary_encoded_region = get_binary_encoded_feature(updated_region_feature)
+        binary_encoded_region = get_label_encoded_feature(updated_region_feature)
         # Job titles and modifiers: Binary encoded
 
-        processed_job_titles, processed_job_modifiers = get_stemmed_sentences(
+        self.processed_job_titles, self.processed_job_modifiers = get_stemmed_sentences(
             self.title_feature
         )
-        binary_encoded_job_titles = get_binary_encoded_feature(processed_job_titles)
-        binary_encoded_job_modifiers = get_binary_encoded_feature(processed_job_modifiers)
+        binary_encoded_job_titles = get_label_encoded_feature(self.processed_job_titles)
+        binary_encoded_job_modifiers = get_label_encoded_feature(self.processed_job_modifiers)
         # Job category: Binary encoded
         processed_category_feature = remove_sub_string('Jobs', self.category_feature)
-        binary_encoded_categories = get_binary_encoded_feature(processed_category_feature)
+        binary_encoded_categories = get_label_encoded_feature(processed_category_feature)
 
         concatanated_features = np.concatenate((
-                    onehot_encoded_desc_words,
+                    #onehot_encoded_desc_words,
                     onehot_encoded_contract_type,
                     onehot_encoded_contract_time,
                     binary_encoded_company,
@@ -112,7 +114,7 @@ class BaseModel(object):
                     [pandas_vector_to_list(self.salary_feature)]
         ))
         concatanated_features = np.transpose(concatanated_features)
-
+        """
         feature_list = [('desc_words', len(onehot_encoded_desc_words)),
                         ('contract_type', len(onehot_encoded_contract_type)),
                         ('contract_time', len(onehot_encoded_contract_time)),
@@ -124,7 +126,7 @@ class BaseModel(object):
                         ('job_modifiers', len(binary_encoded_job_modifiers)),
                         ('categories', len(binary_encoded_categories)),
                         ]
-
+        """
         print('Pre-processing ends \n')
         return (concatanated_features, feature_list)
 
