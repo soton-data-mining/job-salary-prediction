@@ -1,10 +1,10 @@
 from models.BaseModel import BaseModel
-from sklearn import linear_model
-from keras.layers.core import Dense, Activation
+from keras.layers.core import Dense
 from keras.models import Sequential
 from keras import optimizers as opt
-import numpy as np
 from keras import initializations
+import numpy as np
+
 
 class NeuralNetRegressor(BaseModel):
     def predict(self):
@@ -22,7 +22,7 @@ class NeuralNetRegressor(BaseModel):
         model.compile(loss='mean_absolute_error', optimizer=rms, metrics=["accuracy"])
         # optimizer='adam'
         model.fit(self.x_train, self.y_train, validation_data=(self.x_test,
-        self.y_test), nb_epoch=50, batch_size=20000, verbose=1)
+            self.y_test), nb_epoch=50, batch_size=20000, verbose=1)
 
         layer = model.layers[1]
         weights = layer.get_weights()
