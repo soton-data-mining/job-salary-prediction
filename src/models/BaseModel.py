@@ -5,6 +5,7 @@ import numpy as np
 import sklearn
 from sklearn.model_selection import train_test_split
 
+from company_feature_extraction import clean_company_name
 from cleaning_functions import (get_one_hot_encoded_feature,
                                 get_binary_encoded_feature,
                                 get_label_encoded_feature,
@@ -21,10 +22,11 @@ class BaseModel(object):
 
     TRAIN_NORMALIZED_LOCATION_FILE_NAME = '../data/train_normalised_location.csv'
     TRAIN_DATA_CSV_FILE_NAME = '../data/Train_rev1.csv'
-    CLEANED_FILE_NAME = '../data/Binary_Preprocessed_Data.csv-'
+    CLEANED_FILE_NAME = '../data/Binary_Preprocessed_Data.csv'
 
     def __init__(self, train_size=0.75):
         print('Initialized BaseModel')
+
         if os.path.exists(BaseModel.CLEANED_FILE_NAME):
             print('Pre-processed data exists, reading from the file')
             self.cleaned_encoded_data = self.load_cleaned_data()
@@ -47,17 +49,16 @@ class BaseModel(object):
             # Read cleaned locations from separate file, cleaned with Google location
             self.cleaned_town_feature = BaseModel.normalized_location_data[['town']]
             self.cleaned_region_feature = BaseModel.normalized_location_data[['region']]
-            self.processed_job_titles = []
-            self.processed_job_modifiers= []
+
             (self.processed_data, self.feature_list) = self.preprocess_data()
-            self.export_data(self.processed_data, 'Preprocessed_Data')
+            self.export_data(self.processed_data, 'Binary_Preprocessed_Data')
             self.export_data(self.feature_list, 'Feature_List')
             self.cleaned_encoded_data = self.load_cleaned_data()
 
         print('Splitting train and test')
         self.train_data, self.test_data = train_test_split(self.cleaned_encoded_data,
-                                                           train_size=train_size, random_state=9)
-        # Because 9 is good
+                                                           train_size=train_size, random_state=1)
+        # Because 1 is good
         # Random state is there so that train and test is always the same for everyone
         self.x_train = self.train_data[:, 0:self.train_data.shape[1] - 1]
         self.y_train = self.train_data[:, self.train_data.shape[1] - 1]
@@ -67,41 +68,43 @@ class BaseModel(object):
         print('Train test split complete \n')
 
     def preprocess_data(self):
-        print('\n')
         print('Pre-processing begins')
         # Description: consisting of 5 features existence of words below in the description:
         # 'excellent', 'graduate', 'immediate', 'junior', 'urgent'
-        # onehot_encoded_desc_words = get_one_hot_encoded_words(self.description_feature)
+        onehot_encoded_desc_words = get_one_hot_encoded_words(self.description_feature)
         # Contract type: One hot encoded, 3 features: part time, full time, *is empty*
         onehot_encoded_contract_type = get_one_hot_encoded_feature(self.contract_type_feature)
         # Contract time: One hot encoded, 3 features: permanent, contract, *is empty*
         onehot_encoded_contract_time = get_one_hot_encoded_feature(self.contract_time_feature)
         # Company: Binary encoded
-        binary_encoded_company = get_label_encoded_feature(self.company_feature)
+        cleaned_company = clean_company_name(self.company_feature)
+        binary_encoded_company = get_binary_encoded_feature(cleaned_company)
         # Source name: Binary encoded
-        binary_encoded_source = get_label_encoded_feature(self.source_name_feature)
+        binary_encoded_source = get_binary_encoded_feature(self.source_name_feature)
         # Town: Binary encoded
         print('Pre-processing halfway done')
         updated_town_feature = update_location(self.location_raw_feature,
                                                self.cleaned_town_feature)
-        binary_encoded_town = get_label_encoded_feature(updated_town_feature)
+        binary_encoded_town = get_binary_encoded_feature(updated_town_feature)
         # Region: Binary encoded
         updated_region_feature = update_location(self.location_raw_feature,
                                                  self.cleaned_region_feature)
-        binary_encoded_region = get_label_encoded_feature(updated_region_feature)
+        binary_encoded_region = get_binary_encoded_feature(updated_region_feature)
         # Job titles and modifiers: Binary encoded
-
-        self.processed_job_titles, self.processed_job_modifiers = get_stemmed_sentences(
+        processed_job_titles, processed_job_modifiers = get_stemmed_sentences(
             self.title_feature
         )
-        binary_encoded_job_titles = get_label_encoded_feature(self.processed_job_titles)
-        binary_encoded_job_modifiers = get_label_encoded_feature(self.processed_job_modifiers)
+        binary_encoded_job_titles = get_binary_encoded_feature(processed_job_titles)
+        binary_encoded_job_modifiers = get_binary_encoded_feature(processed_job_modifiers)
+        print(len(set(processed_job_titles)))
+        print(len(set(processed_job_modifiers)))
+        print(len(set(self.title_feature)))
         # Job category: Binary encoded
         processed_category_feature = remove_sub_string('Jobs', self.category_feature)
-        binary_encoded_categories = get_label_encoded_feature(processed_category_feature)
+        binary_encoded_categories = get_binary_encoded_feature(processed_category_feature)
 
         concatanated_features = np.concatenate((
-                    #onehot_encoded_desc_words,
+                    onehot_encoded_desc_words,
                     onehot_encoded_contract_type,
                     onehot_encoded_contract_time,
                     binary_encoded_company,
@@ -114,7 +117,7 @@ class BaseModel(object):
                     [pandas_vector_to_list(self.salary_feature)]
         ))
         concatanated_features = np.transpose(concatanated_features)
-        """
+
         feature_list = [('desc_words', len(onehot_encoded_desc_words)),
                         ('contract_type', len(onehot_encoded_contract_type)),
                         ('contract_time', len(onehot_encoded_contract_time)),
@@ -126,7 +129,6 @@ class BaseModel(object):
                         ('job_modifiers', len(binary_encoded_job_modifiers)),
                         ('categories', len(binary_encoded_categories)),
                         ]
-        """
         print('Pre-processing ends \n')
         return (concatanated_features, feature_list)
 
@@ -135,11 +137,13 @@ class BaseModel(object):
         print('Exporting data to ../data/'+file_name)
         print('Will read from there next time to avoid pre-processing')
         f = open('../data/'+file_name+'.csv', 'a')
-        for list in list_to_write:
-            for item in list:
+        for main_index, sub_list in enumerate(list_to_write):
+            for index, item in enumerate(sub_list):
                 f.write(str(item))
-                f.write(',')
-            f.write('\n')
+                if index < len(sub_list)-1:
+                    f.write(',')
+            if main_index < len(list_to_write)-1:
+                f.write('\n')
         f.close()
         print('Exporting complete \n')
 
@@ -147,9 +151,10 @@ class BaseModel(object):
     def export_prediction(prediction_to_write, file_name):
         print('Exporting prediction to ../predictions/'+file_name)
         f = open('../predictions/'+file_name+'.csv', 'a')
-        for item in prediction_to_write:
+        for index, item in enumerate(prediction_to_write):
             f.write(str(item))
-            f.write('\n')
+            if index < len(prediction_to_write)-1:
+                f.write('\n')
         f.close()
         print('Exporting complete \n')
 
@@ -165,8 +170,6 @@ class BaseModel(object):
     @staticmethod
     def load_cleaned_data():
         loaded_data = pd.read_csv(BaseModel.CLEANED_FILE_NAME, header=None)
-        loaded_data = loaded_data.iloc[:, 0:loaded_data.shape[1]-1]
-        # For some reason there is a 'nan' column at the end
         loaded_data = loaded_data.as_matrix()
         loaded_data = loaded_data.astype(int)
         return loaded_data
@@ -185,6 +188,7 @@ class BaseModel(object):
         predict salary according to implementation of model and calculate the error
         :return error of model
         """
+        print('Training begins')
         (train_result, test_result) = self.predict()
         (train_error, test_error) = self.calculate_error(train_result, test_result)
         return 1
