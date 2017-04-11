@@ -21,8 +21,9 @@ class NeuralNetRegressor(BaseModel):
         # nadam = opt.Nadam(lr=0.05, beta_1=0.9, beta_2=0.999, epsilon=1e-08, schedule_decay=0.004)
         model.compile(loss='mean_absolute_error', optimizer=rms, metrics=["accuracy"])
         # optimizer='adam'
-        model.fit(self.x_train, self.y_train, validation_data=(self.x_test,
-            self.y_test), nb_epoch=50, batch_size=20000, verbose=1
+        model.fit(
+                  self.x_train, self.y_train, validation_data=(self.x_test, self.y_test),
+                  nb_epoch=50, batch_size=20000, verbose=1
         )
 
         layer = model.layers[1]
