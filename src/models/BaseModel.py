@@ -1,16 +1,16 @@
-import os.path
 import abc
-import pandas as pd
 import numpy as np
+import os.path
+import pandas as pd
 import sklearn
 from sklearn.model_selection import train_test_split
 
-from company_feature_extraction import clean_company_name
 from cleaning_functions import (get_one_hot_encoded_feature,
                                 get_binary_encoded_feature,
                                 update_location,
                                 pandas_vector_to_list,
                                 remove_sub_string)
+from company_feature_extraction import clean_company_name
 from job_description_feature_extraction import get_one_hot_encoded_words
 from job_titles_feature_extraction import get_stemmed_sentences
 
@@ -103,17 +103,17 @@ class BaseModel(object):
         binary_encoded_categories = get_binary_encoded_feature(processed_category_feature)
 
         concatanated_features = np.concatenate((
-                    onehot_encoded_desc_words,
-                    onehot_encoded_contract_type,
-                    onehot_encoded_contract_time,
-                    binary_encoded_company,
-                    binary_encoded_source,
-                    binary_encoded_town,
-                    binary_encoded_region,
-                    binary_encoded_job_titles,
-                    binary_encoded_job_modifiers,
-                    binary_encoded_categories,
-                    [pandas_vector_to_list(self.salary_feature)]
+            onehot_encoded_desc_words,
+            onehot_encoded_contract_type,
+            onehot_encoded_contract_time,
+            binary_encoded_company,
+            binary_encoded_source,
+            binary_encoded_town,
+            binary_encoded_region,
+            binary_encoded_job_titles,
+            binary_encoded_job_modifiers,
+            binary_encoded_categories,
+            [pandas_vector_to_list(self.salary_feature)]
         ))
         concatanated_features = np.transpose(concatanated_features)
 
@@ -133,26 +133,26 @@ class BaseModel(object):
 
     @staticmethod
     def export_data(list_to_write, file_name):
-        print('Exporting data to ../data/'+file_name)
+        print('Exporting data to ../data/' + file_name)
         print('Will read from there next time to avoid pre-processing')
-        f = open('../data/'+file_name+'.csv', 'a')
+        f = open('../data/' + file_name + '.csv', 'a')
         for main_index, sub_list in enumerate(list_to_write):
             for index, item in enumerate(sub_list):
                 f.write(str(item))
-                if index < len(sub_list)-1:
+                if index < len(sub_list) - 1:
                     f.write(',')
-            if main_index < len(list_to_write)-1:
+            if main_index < len(list_to_write) - 1:
                 f.write('\n')
         f.close()
         print('Exporting complete \n')
 
     @staticmethod
     def export_prediction(prediction_to_write, file_name):
-        print('Exporting prediction to ../predictions/'+file_name)
-        f = open('../predictions/'+file_name+'.csv', 'a')
+        print('Exporting prediction to ../predictions/' + file_name)
+        f = open('../predictions/' + file_name + '.csv', 'a')
         for index, item in enumerate(prediction_to_write):
             f.write(str(item))
-            if index < len(prediction_to_write)-1:
+            if index < len(prediction_to_write) - 1:
                 f.write('\n')
         f.close()
         print('Exporting complete \n')
@@ -187,7 +187,7 @@ class BaseModel(object):
         predict salary according to implementation of model and calculate the error
         :return error of model
         """
-        print('Training begins')
+        print('Training {}'.format(self.__class__.__name__))
         (train_result, test_result) = self.predict()
         (train_error, test_error) = self.calculate_error(train_result, test_result)
         return 1
@@ -200,6 +200,6 @@ class BaseModel(object):
         """
         train_error = sklearn.metrics.mean_absolute_error(self.y_train, train_result)
         test_error = sklearn.metrics.mean_absolute_error(self.y_test, test_result)
-        print("Train MSE: {}".format(train_error))
-        print("Test MSE: {}".format(test_error))
+        print("Train MSE of {}: {}".format(self.__class__.__name__, train_error))
+        print("Test MSE of {}: {}".format(self.__class__.__name__, test_error))
         return (train_error, test_error)
