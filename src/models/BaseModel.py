@@ -23,7 +23,7 @@ class BaseModel(object):
     TRAIN_DATA_CSV_FILE_NAME = '../data/Train_rev1.csv'
     CLEANED_FILE_NAME = '../data/Binary_Preprocessed_Data.csv'
 
-    def __init__(self, train_size=0.75, test_size=None):
+    def __init__(self, train_size=0.75, test_size=None, force_load_all=False):
         """
         :param train_size: can be either a float or int
          - float: ratio of how much is training/test data
@@ -37,10 +37,12 @@ class BaseModel(object):
         if os.path.exists(BaseModel.CLEANED_FILE_NAME):
             print('Pre-processed data exists, reading from the file')
             self.cleaned_encoded_data = self.load_cleaned_data()
-            print('Data read complete, loading raw data')
-            self.load_all_data()
-            self.description_feature = BaseModel.data[['FullDescription']]
-            print('Raw data read complete')
+            print('Data read complete')
+            if force_load_all:
+                print('loading raw data')
+                self.load_all_data()
+                self.description_feature = BaseModel.data[['FullDescription']]
+                print('Raw data read complete')
         else:
             print('Pre-processed data doesn\'t exist, preprocessing data first')
             print('This operation will take a while')

@@ -54,8 +54,7 @@ class StandaloneSimilarity(BaseModel):
         return self.y_train, prediction
 
     def free_memory(self):
-        # i have only have 8 gigs of memory and if we keep multiple copies of everything my laptop
-        # will start swapping like crazy
+        # remove references to data not used in this model to free up memory
         self.cleaned_encoded_data = 0
         self.data = 0
         self.description_train_data = 0
