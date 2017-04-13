@@ -37,7 +37,10 @@ class BaseModel(object):
         if os.path.exists(BaseModel.CLEANED_FILE_NAME):
             print('Pre-processed data exists, reading from the file')
             self.cleaned_encoded_data = self.load_cleaned_data()
-            print('Data read complete')
+            print('Data read complete, loading raw data')
+            self.load_all_data()
+            self.description_feature = BaseModel.data[['FullDescription']]
+            print('Raw data read complete')
         else:
             print('Pre-processed data doesn\'t exist, preprocessing data first')
             print('This operation will take a while')
@@ -63,12 +66,17 @@ class BaseModel(object):
             self.cleaned_encoded_data = self.load_cleaned_data()
 
         print('Splitting train and test')
+        # Because 1 is good
+        # Random state is there so that train and test is always the same for everyone
         self.train_data, self.test_data = train_test_split(self.cleaned_encoded_data,
                                                            train_size=train_size,
                                                            test_size=test_size,
                                                            random_state=1)
-        # Because 1 is good
-        # Random state is there so that train and test is always the same for everyone
+
+        self.description_train_data, self.description_test_data = train_test_split(self.description_feature,
+                                                           train_size=train_size,
+                                                           test_size=test_size,
+                                                           random_state=1)
         self.x_train = self.train_data[:, 0:self.train_data.shape[1] - 1]
         self.y_train = self.train_data[:, self.train_data.shape[1] - 1]
 

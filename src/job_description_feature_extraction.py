@@ -88,7 +88,7 @@ def cosine_knn(corpus_vector, queries_vector, k=10):
     # since we want to use cosine similarity to account for document length
     # we have to use bruteforce search
     # parallelize to number of cores with n_jobs -1
-    nbrs = NearestNeighbors(n_neighbors=k, algorithm='brute', metric='cosine', n_jobs=-1)
+    nbrs = NearestNeighbors(n_neighbors=k, algorithm='brute', metric='cosine')
     nbrs.fit(corpus_vector)
     distances, indices = nbrs.kneighbors(queries_vector)
     return distances, indices

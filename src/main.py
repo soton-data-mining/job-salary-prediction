@@ -22,5 +22,6 @@ if __name__ == "__main__":
     SupportVectorRegressionModel = SVR()
     SupportVectorRegressionModel.run()
 
-    StandaloneSim = StandaloneSimilarity()
+    StandaloneSim = StandaloneSimilarity(train_size=70000, test_size=5000)
     StandaloneSim.run()
+
