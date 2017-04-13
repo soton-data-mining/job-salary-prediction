@@ -9,4 +9,4 @@ python-rake>=1.0.7
 sklearn
 scipy==0.18.0
 keras==1.2.1
-tensorflow=0.12.1
+tensorflow==0.12.1
