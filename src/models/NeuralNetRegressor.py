@@ -14,7 +14,7 @@ class NeuralNetRegressor(BaseModel):
             return initializations.normal(shape, scale=0.02, name=name)
 
         model = Sequential()
-        model.add(Dense(200, input_dim=18, activation='relu', init=weight_init))
+        model.add(Dense(200, input_dim=85, activation='relu', init=weight_init))
         model.add(Dense(10, activation='relu', init=weight_init))
         model.add(Dense(1))
         rms = opt.RMSprop(lr=0.07, rho=0.9, epsilon=1e-08, decay=1e-8)
