@@ -42,7 +42,7 @@ class BaseModel(object):
         self.train_description_feature = self.train_data[['FullDescription']]
         self.train_contract_type_feature = self.train_data[['ContractType']]
         self.train_contract_time_feature = self.train_data[['ContractTime']]
-        self.train_category_feature = self.train_data[['ContractTime']]
+        self.train_category_feature = self.train_data[['Category']]
         self.train_company_feature = self.train_data[['Company']]
         self.train_source_name_feature = self.train_data[['SourceName']]
         self.train_location_raw_feature = self.train_data[['LocationRaw']]
