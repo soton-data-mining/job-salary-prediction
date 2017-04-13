@@ -23,8 +23,16 @@ class BaseModel(object):
     TRAIN_DATA_CSV_FILE_NAME = '../data/Train_rev1.csv'
     CLEANED_FILE_NAME = '../data/Binary_Preprocessed_Data.csv'
 
-    def __init__(self, train_size=0.75):
-        print('Initialized BaseModel')
+    def __init__(self, train_size=0.75, test_size=None):
+        """
+        :param train_size: can be either a float or int
+         - float: ratio of how much is training/test data
+         - int: for total size
+        :param test_size: see train_size - allows you to work on a smaller data set
+         i.e. 100 train, 50 test for debugging or during development
+         defaults to None which equals 1-train_size
+        """
+        print('Initialized {}'.format(self.__class__.__name__))
 
         if os.path.exists(BaseModel.CLEANED_FILE_NAME):
             print('Pre-processed data exists, reading from the file')
@@ -56,7 +64,9 @@ class BaseModel(object):
 
         print('Splitting train and test')
         self.train_data, self.test_data = train_test_split(self.cleaned_encoded_data,
-                                                           train_size=train_size, random_state=1)
+                                                           train_size=train_size,
+                                                           test_size=test_size,
+                                                           random_state=1)
         # Because 1 is good
         # Random state is there so that train and test is always the same for everyone
         self.x_train = self.train_data[:, 0:self.train_data.shape[1] - 1]
