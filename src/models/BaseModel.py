@@ -149,6 +149,8 @@ class BaseModel(object):
     @staticmethod
     def export_prediction(prediction_to_write, file_name):
         print('Exporting prediction to ../predictions/' + file_name)
+        if not (os.path.exists("../predictions")):
+            os.makedirs("../predictions")
         f = open('../predictions/' + file_name + '.csv', 'a')
         for index, item in enumerate(prediction_to_write):
             f.write(str(item))
