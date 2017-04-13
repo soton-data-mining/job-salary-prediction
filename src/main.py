@@ -9,7 +9,7 @@ from models.RandomForestRegressor import RandomForestRegressor
 if __name__ == "__main__":
     SA = SimpleAverage()
     SA.run()
-    
+
     RF = RandomForestRegressor()
     RF.run()
 
