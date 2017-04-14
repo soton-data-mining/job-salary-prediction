@@ -21,12 +21,12 @@ if __name__ == "__main__":
     LinearRegressionModel = LinearRegression()
     LinearRegressionModel.run()
 
-    # SupportVectorRegressionModel = SVR()
-    # SupportVectorRegressionModel.run()
+    SupportVectorRegressionModel = SVR()
+    SupportVectorRegressionModel.run()
 
     StandaloneSim = StandaloneSimilarity()
     StandaloneSim.run()
 
-    models_to_graph = [SA, RF, NNR, LinearRegressionModel, StandaloneSim]
+    models_to_graph = [SA, RF, NNR, SupportVectorRegressionModel, LinearRegressionModel, StandaloneSim]
     rg = ResultsGrapher(models_to_graph)
     rg.plot_bar_chart_error_rates_all()
