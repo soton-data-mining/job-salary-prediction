@@ -74,7 +74,9 @@ class BaseModel(object):
 
         self.x_test = self.test_data[:, 0:self.test_data.shape[1] - 1]
         self.y_test = self.test_data[:, self.test_data.shape[1] - 1]
+
         print('Train test split complete \n')
+        self.mae_test_error = -1
 
     def preprocess_data(self):
         print('Pre-processing begins')
@@ -139,7 +141,7 @@ class BaseModel(object):
                         ('categories', len(binary_encoded_categories)),
                         ]
         print('Pre-processing ends \n')
-        return (concatanated_features, feature_list)
+        return concatanated_features, feature_list
 
     @staticmethod
     def export_data(list_to_write, file_name):
@@ -212,6 +214,7 @@ class BaseModel(object):
         """
         train_error = sklearn.metrics.mean_absolute_error(self.y_train, train_result)
         test_error = sklearn.metrics.mean_absolute_error(self.y_test, test_result)
+        self.mae_test_error = test_error
         print("Train MSE of {}: {}".format(self.__class__.__name__, train_error))
         print("Test MSE of {}: {}".format(self.__class__.__name__, test_error))
-        return (train_error, test_error)
+        return train_error, test_error
