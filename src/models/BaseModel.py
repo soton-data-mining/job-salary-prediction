@@ -33,10 +33,9 @@ class BaseModel(object):
          defaults to None which equals 1-train_size
         """
         print('Initialized {}'.format(self.__class__.__name__))
-
         if os.path.exists(BaseModel.CLEANED_FILE_NAME):
             print('Pre-processed data exists, reading from the file')
-            self.cleaned_encoded_data = self.load_cleaned_data()
+            self.cleaned_encoded_data, self.column_names = self.load_cleaned_data()
             print('Data read complete')
         else:
             print('Pre-processed data doesn\'t exist, preprocessing data first')
@@ -57,10 +56,9 @@ class BaseModel(object):
             self.cleaned_town_feature = BaseModel.normalized_location_data[['town']]
             self.cleaned_region_feature = BaseModel.normalized_location_data[['region']]
 
-            (self.processed_data, self.feature_list) = self.preprocess_data()
-            self.export_data(self.processed_data, 'Binary_Preprocessed_Data')
-            self.export_data(self.feature_list, 'Feature_List')
-            self.cleaned_encoded_data = self.load_cleaned_data()
+            (self.processed_data, self.feature_names) = self.preprocess_data()
+            self.export_data(self.processed_data, self.feature_names, 'Binary_Preprocessed_Data')
+            self.cleaned_encoded_data, self.column_names = self.load_cleaned_data()
 
         print('Splitting train and test')
         self.train_data, self.test_data = train_test_split(self.cleaned_encoded_data,
@@ -80,39 +78,45 @@ class BaseModel(object):
         print('Pre-processing begins')
         # Description: consisting of 5 features existence of words below in the description:
         # 'excellent', 'graduate', 'immediate', 'junior', 'urgent'
-        onehot_encoded_desc_words = get_one_hot_encoded_words(self.description_feature)
+        (onehot_encoded_desc_words, col_names_1) = \
+            get_one_hot_encoded_words(self.description_feature)
         # Contract type: One hot encoded, 3 features: part time, full time, *is empty*
-        onehot_encoded_contract_type = get_one_hot_encoded_feature(self.contract_type_feature)
+        (onehot_encoded_contract_type, col_names_2) = \
+            get_one_hot_encoded_feature(self.contract_type_feature, 'contract_type')
         # Contract time: One hot encoded, 3 features: permanent, contract, *is empty*
-        onehot_encoded_contract_time = get_one_hot_encoded_feature(self.contract_time_feature)
+        (onehot_encoded_contract_time, col_names_3) = \
+            get_one_hot_encoded_feature(self.contract_time_feature, 'contract_time')
         # Company: Binary encoded
         cleaned_company = clean_company_name(self.company_feature)
-        binary_encoded_company = get_binary_encoded_feature(cleaned_company)
+        (binary_encoded_company, col_names_4) = \
+            get_binary_encoded_feature(cleaned_company, 'company')
         # Source name: Binary encoded
-        binary_encoded_source = get_binary_encoded_feature(self.source_name_feature)
+        (binary_encoded_source, col_names_5) = \
+            get_binary_encoded_feature(self.source_name_feature, 'source')
         # Town: Binary encoded
+        # Region: Binary encoded
         print('Pre-processing halfway done')
         updated_town_feature = update_location(self.location_raw_feature,
                                                self.cleaned_town_feature)
-        binary_encoded_town = get_binary_encoded_feature(updated_town_feature)
-        # Region: Binary encoded
         updated_region_feature = update_location(self.location_raw_feature,
                                                  self.cleaned_region_feature)
-        binary_encoded_region = get_binary_encoded_feature(updated_region_feature)
+        (binary_encoded_town, col_names_6) = \
+            get_binary_encoded_feature(updated_town_feature, 'town')
+        (binary_encoded_region, col_names_7) = \
+            get_binary_encoded_feature(updated_region_feature, 'region')
         # Job titles and modifiers: Binary encoded
-        processed_job_titles, processed_job_modifiers = get_stemmed_sentences(
-            self.title_feature
-        )
-        binary_encoded_job_titles = get_binary_encoded_feature(processed_job_titles)
-        binary_encoded_job_modifiers = get_binary_encoded_feature(processed_job_modifiers)
-        print(len(set(processed_job_titles)))
-        print(len(set(processed_job_modifiers)))
-        print(len(set(self.title_feature)))
+        processed_job_titles, processed_job_modifiers = \
+            get_stemmed_sentences(self.title_feature)
+        (binary_encoded_job_titles, col_names_8) = \
+            get_binary_encoded_feature(processed_job_titles, 'job_titles')
+        (binary_encoded_job_modifiers, col_names_9) = \
+            get_binary_encoded_feature(processed_job_modifiers, 'job_modifiers')
         # Job category: Binary encoded
         processed_category_feature = remove_sub_string('Jobs', self.category_feature)
-        binary_encoded_categories = get_binary_encoded_feature(processed_category_feature)
+        (binary_encoded_categories, col_names_10) = \
+            get_binary_encoded_feature(processed_category_feature, 'category')
 
-        concatanated_features = np.concatenate((
+        concatenated_features = np.concatenate((
             onehot_encoded_desc_words,
             onehot_encoded_contract_type,
             onehot_encoded_contract_time,
@@ -125,27 +129,38 @@ class BaseModel(object):
             binary_encoded_categories,
             [pandas_vector_to_list(self.salary_feature)]
         ))
-        concatanated_features = np.transpose(concatanated_features)
+        concatenated_features = np.transpose(concatenated_features)
 
-        feature_list = [('desc_words', len(onehot_encoded_desc_words)),
-                        ('contract_type', len(onehot_encoded_contract_type)),
-                        ('contract_time', len(onehot_encoded_contract_time)),
-                        ('company', len(binary_encoded_company)),
-                        ('source', len(binary_encoded_source)),
-                        ('town', len(binary_encoded_town)),
-                        ('region', len(binary_encoded_region)),
-                        ('job_titles', len(binary_encoded_job_titles)),
-                        ('job_modifiers', len(binary_encoded_job_modifiers)),
-                        ('categories', len(binary_encoded_categories)),
-                        ]
-        print('Pre-processing ends \n')
-        return (concatanated_features, feature_list)
+        concatenated_column_names = np.concatenate((
+            col_names_1,
+            col_names_2,
+            col_names_3,
+            col_names_4,
+            col_names_5,
+            col_names_6,
+            col_names_7,
+            col_names_8,
+            col_names_9,
+            col_names_10,
+            ['Salary']
+        ))
+        print('Pre-processing finished \n')
+        return (concatenated_features, concatenated_column_names)
 
     @staticmethod
-    def export_data(list_to_write, file_name):
+    def export_data(list_to_write, column_names, file_name):
         print('Exporting data to ../data/' + file_name)
         print('Will read from there next time to avoid pre-processing')
         f = open('../data/' + file_name + '.csv', 'a')
+
+        # Write column names first
+        for index, item, in enumerate(column_names):
+            f.write(str(item))
+            if index < len(column_names) - 1:
+                f.write(',')
+            else:
+                f.write('\n')
+        # Write data
         for main_index, sub_list in enumerate(list_to_write):
             for index, item in enumerate(sub_list):
                 f.write(str(item))
@@ -175,15 +190,16 @@ class BaseModel(object):
         loads all data into the static set
         """
         BaseModel.data = pd.read_csv(BaseModel.TRAIN_DATA_CSV_FILE_NAME)
-        BaseModel.normalized_location_data = pd.read_csv(
-            BaseModel.TRAIN_NORMALIZED_LOCATION_FILE_NAME)
+        BaseModel.normalized_location_data = \
+            pd.read_csv(BaseModel.TRAIN_NORMALIZED_LOCATION_FILE_NAME)
 
     @staticmethod
     def load_cleaned_data():
-        loaded_data = pd.read_csv(BaseModel.CLEANED_FILE_NAME, header=None)
+        loaded_data = pd.read_csv(BaseModel.CLEANED_FILE_NAME)
+        column_names = list(loaded_data.columns.values)
         loaded_data = loaded_data.as_matrix()
         loaded_data = loaded_data.astype(int)
-        return loaded_data
+        return (loaded_data, column_names)
 
     abc.abstractmethod
 

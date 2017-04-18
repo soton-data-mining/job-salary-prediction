@@ -24,15 +24,17 @@ def get_label_encoded_feature(feature):
     return [label_encoded_feature]
 
 
-def get_one_hot_encoded_feature(feature):
+def get_one_hot_encoded_feature(feature, feature_name):
+    # One veeeeery hot encoding
     if isinstance(feature, list):  # Input is list
         feature_as_list = feature
     else:  # Input is pandas df
         feature_as_list = pandas_vector_to_list(feature)
     feature_set = set(feature_as_list)  # Get unique values
-
     one_hot_encoded_features = []
-    for unique_item in feature_set:  # One hot encode contracts
+    encoded_labels = []
+    for unique_item in feature_set:  # One hot encode values
+        encoded_labels.append(feature_name+'_is_'+str(unique_item))
         unique_feature_field = []
         for individual_item in feature_as_list:
             if str(individual_item) == str(unique_item):
@@ -40,10 +42,11 @@ def get_one_hot_encoded_feature(feature):
             else:
                 unique_feature_field.append(0)
         one_hot_encoded_features.append(unique_feature_field)
-    return one_hot_encoded_features  # Return list of lists of one hot encoded features
+    return (one_hot_encoded_features, encoded_labels)
+    # Return list of lists of one hot encoded features
 
 
-def get_binary_encoded_feature(feature):
+def get_binary_encoded_feature(feature, feature_name):
     if isinstance(feature, list):  # Input is list
         feature_as_list = feature
     else:  # Input is pandas df
@@ -53,7 +56,9 @@ def get_binary_encoded_feature(feature):
     binary_feature_length = len(bin(len(unique_feature_list))[2:])  # How many columns needed
     # Amount of columns needed to express this feature
     binary_encoded_feature = []
+    column_names = []
     for i in range(0, binary_feature_length):
+        column_names.append('bin_'+feature_name+'_'+str(i))
         binary_column = []
         binary_encoded_feature.append(binary_column)
     # Have a list of lists, length, the length is amount of columns needed to express data
@@ -62,7 +67,7 @@ def get_binary_encoded_feature(feature):
         corresponding_binary = get_bin(corresponding_integer, binary_feature_length)
         for index, digit in enumerate(corresponding_binary):
             binary_encoded_feature[index].append(digit)
-    return binary_encoded_feature
+    return (binary_encoded_feature, column_names)
 
 
 def update_location(location_raw, cleaned_location):

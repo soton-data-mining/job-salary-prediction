@@ -30,7 +30,7 @@ def get_one_hot_encoded_words(feature_to_extract):
             else:
                 one_hot_encoded_list.append(0)
         encoded_features.append(one_hot_encoded_list)
-    return encoded_features
+    return (encoded_features, word_list)
 
 
 def get_feature_word_count(column_to_count):
