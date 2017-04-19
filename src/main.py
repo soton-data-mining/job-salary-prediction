@@ -7,22 +7,20 @@ from models.NeuralNetRegressor import NeuralNetRegressor
 from models.RandomForestRegressor import RandomForestRegressor
 
 if __name__ == "__main__":
-    # SA = SimpleAverage()
-    # SA.run()
-    #
-    # RF = RandomForestRegressor()
-    # RF.run()
-    #
-    # NNR = NeuralNetRegressor()
-    # NNR.run()
-    #
-    # LinearRegressionModel = LinearRegression()
-    # LinearRegressionModel.run()
-    #
-    # SupportVectorRegressionModel = SVR()
-    # SupportVectorRegressionModel.run()
+    SA = SimpleAverage()
+    SA.run()
 
-    # don't run this together with other models activated
-    # you will probably run out of memory
-    StandaloneSim = StandaloneSimilarity(train_size=100000, test_size=10000, force_load_all=True)
+    RF = RandomForestRegressor()
+    RF.run()
+
+    NNR = NeuralNetRegressor()
+    NNR.run()
+
+    LinearRegressionModel = LinearRegression()
+    LinearRegressionModel.run()
+
+    SupportVectorRegressionModel = SVR()
+    SupportVectorRegressionModel.run()
+
+    StandaloneSim = StandaloneSimilarity()
     StandaloneSim.run()

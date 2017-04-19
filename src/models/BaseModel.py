@@ -3,6 +3,7 @@ import numpy as np
 import os.path
 import pandas as pd
 import sklearn
+from scipy.sparse import csr_matrix
 from sklearn.model_selection import train_test_split
 
 from cleaning_functions import (get_one_hot_encoded_feature,
@@ -75,10 +76,11 @@ class BaseModel(object):
                                                            test_size=test_size,
                                                            random_state=1)
 
-        self.description_train_data, self.description_test_data = train_test_split(self.description_feature,
-                                                           train_size=train_size,
-                                                           test_size=test_size,
-                                                           random_state=1)
+        self.description_train_data, self.description_test_data = train_test_split(
+            self.description_feature,
+            train_size=train_size,
+            test_size=test_size,
+            random_state=1)
         self.x_train = self.train_data[:, 0:self.train_data.shape[1] - 1]
         self.y_train = self.train_data[:, self.train_data.shape[1] - 1]
 
@@ -225,3 +227,13 @@ class BaseModel(object):
         print("Train MSE of {}: {}".format(self.__class__.__name__, train_error))
         print("Test MSE of {}: {}".format(self.__class__.__name__, test_error))
         return (train_error, test_error)
+
+    # from https://stackoverflow.com/questions/8955448
+    def save_sparse_csr(self, filename, array):
+        np.savez(filename, data=array.data, indices=array.indices, indptr=array.indptr,
+                 shape=array.shape)
+
+    def load_sparse_csr(self, filename):
+        loader = np.load(filename)
+        return csr_matrix((loader['data'], loader['indices'], loader['indptr']),
+                          shape=loader['shape'])

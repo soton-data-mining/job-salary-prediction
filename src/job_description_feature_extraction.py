@@ -110,6 +110,25 @@ def extract_relevant_documents(similarity, sim_threshold=0.8):
     return relevant_documents
 
 
+def extract_top_k_documents(similarity, k=5):
+    """
+    return top k similar documents from similarity matrix
+
+    :param similarity: similarity matrix from get_tfidf_similarity()
+    :param k: top k entries so return
+    :return: dict of [(document_index, similarity)] for every query from similarity matrix
+    """
+    indicies = []
+    distances = []
+
+    for similarity_list in similarity:
+        index = [i for i in np.argsort(similarity_list)[-k:]][::-1]
+        distances.append([1 - similarity_list[i] for i in index])
+        indicies.append(index)
+
+    return distances, indicies
+
+
 def get_rake_keywords(job_description):
     """
     extract keywords of documents using Rapid Automatic Keyword Extraction
