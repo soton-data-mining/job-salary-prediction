@@ -23,8 +23,13 @@ class BaseModel(object):
     TRAIN_NORMALIZED_LOCATION_FILE_NAME = '../data/train_normalised_location.csv'
     TRAIN_DATA_CSV_FILE_NAME = '../data/Train_rev1.csv'
     CLEANED_FILE_NAME = '../data/Binary_Preprocessed_Data.csv'
+    FEATURE_METADATA_FILE_NAME = '../data/Feature_List.csv'
 
-    def __init__(self, train_size=0.75, test_size=None, force_load_all=False):
+    def __init__(self,
+                 train_size=0.75,
+                 test_size=None,
+                 force_load_all=False,
+                 drop_feature_names=None):
         """
         :param train_size: can be either a float or int
          - float: ratio of how much is training/test data
@@ -37,7 +42,7 @@ class BaseModel(object):
 
         if os.path.exists(BaseModel.CLEANED_FILE_NAME):
             print('Pre-processed data exists, reading from the file')
-            self.cleaned_encoded_data = self.load_cleaned_data()
+            self.cleaned_encoded_data, self.feature_list = self.load_cleaned_data()
             print('Data read complete')
             if force_load_all:
                 print('loading raw data')
@@ -66,7 +71,13 @@ class BaseModel(object):
             (self.processed_data, self.feature_list) = self.preprocess_data()
             self.export_data(self.processed_data, 'Binary_Preprocessed_Data')
             self.export_data(self.feature_list, 'Feature_List')
-            self.cleaned_encoded_data = self.load_cleaned_data()
+            self.cleaned_encoded_data, self.feature_list = self.load_cleaned_data()
+
+        # in order to investigate some experimental awesomeness, we may
+        # want to arbitrarily drop features. Be warned, nobody told you
+        # this was efficient.
+        if drop_feature_names:
+            self._drop_features(drop_feature_names)
 
         print('Splitting train and test')
         # Because 1 is good
@@ -75,12 +86,15 @@ class BaseModel(object):
                                                            train_size=train_size,
                                                            test_size=test_size,
                                                            random_state=1)
-
-        self.description_train_data, self.description_test_data = train_test_split(
-            self.description_feature,
-            train_size=train_size,
-            test_size=test_size,
-            random_state=1)
+        try:
+            self.description_train_data, self.description_test_data = train_test_split(
+                self.description_feature,
+                train_size=train_size,
+                test_size=test_size,
+                random_state=1)
+        except:
+            print("Not loading description training/test data because "
+                  "description data was not loaded.")
         self.x_train = self.train_data[:, 0:self.train_data.shape[1] - 1]
         self.y_train = self.train_data[:, self.train_data.shape[1] - 1]
 
@@ -89,6 +103,35 @@ class BaseModel(object):
 
         print('Train test split complete \n')
         self.mae_test_error = -1
+
+    def _get_feature_indices(self, feature_name):
+        range_start = 0
+        range_end = 0
+        for row in self.feature_list:
+            if row[0] == feature_name:
+                range_end = range_start + row[1]
+                break
+            else:
+                range_start += row[1]
+        return [index for index in range(range_start, range_end)]
+
+    def _drop_features(self, features):
+        """
+        dropping individually's going to lead to extremely strange offsets,
+        clip them out all in one go and don't let this happen again.
+        (or do, but you were warned, your problem if you run this method more
+        than once per run.)
+        :param features: list of feature names you don't like
+        :return: nothing, mutates data in the instance. gory.
+        """
+        sniplist = []
+        for feature in features:
+            sniplist.extend(self._get_feature_indices(feature))
+
+        # aight, snip out those columns.
+        self.cleaned_encoded_data = np.delete(self.cleaned_encoded_data,
+                                              sniplist,
+                                              axis=1)
 
     def preprocess_data(self):
         print('Pre-processing begins')
@@ -197,9 +240,12 @@ class BaseModel(object):
         loaded_data = pd.read_csv(BaseModel.CLEANED_FILE_NAME, header=None)
         loaded_data = loaded_data.as_matrix()
         loaded_data = loaded_data.astype(int)
-        return loaded_data
 
-    abc.abstractmethod
+        loaded_feature_data = pd.read_csv(BaseModel.FEATURE_METADATA_FILE_NAME,
+                                          header=None)
+        loaded_feature_data = loaded_feature_data.as_matrix()
+
+        return loaded_data, loaded_feature_data
 
     def predict(self):
         """
