@@ -10,4 +10,6 @@ sklearn
 scipy==0.18.0
 keras==1.2.1
 tensorflow==0.12.1
+matplotlib==2.0.0
 tqdm==4.11.2
+

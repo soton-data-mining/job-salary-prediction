@@ -6,6 +6,8 @@ from models.StandaloneSimilarity import StandaloneSimilarity
 from models.NeuralNetRegressor import NeuralNetRegressor
 from models.RandomForestRegressor import RandomForestRegressor
 
+from results_viewer.ResultsGrapher import ResultsGrapher
+
 if __name__ == "__main__":
     SA = SimpleAverage()
     SA.run()
@@ -24,3 +26,8 @@ if __name__ == "__main__":
 
     StandaloneSim = StandaloneSimilarity()
     StandaloneSim.run()
+
+    models_to_graph = [SA, RF, NNR, SupportVectorRegressionModel,
+                       LinearRegressionModel, StandaloneSim]
+    rg = ResultsGrapher(models_to_graph)
+    rg.plot_bar_chart_error_rates_all()
