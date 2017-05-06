@@ -40,6 +40,8 @@ class BaseModel(object):
         """
         print('Initialized {}'.format(self.__class__.__name__))
 
+        self.drop_feature_names = drop_feature_names
+
         if os.path.exists(BaseModel.CLEANED_FILE_NAME):
             print('Pre-processed data exists, reading from the file')
             self.cleaned_encoded_data, self.feature_list = self.load_cleaned_data()
