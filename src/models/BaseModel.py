@@ -3,6 +3,7 @@ import numpy as np
 import os.path
 import pandas as pd
 import sklearn
+from scipy.sparse import csr_matrix
 from sklearn.model_selection import train_test_split
 
 from cleaning_functions import (get_one_hot_encoded_feature,
@@ -23,7 +24,7 @@ class BaseModel(object):
     TRAIN_DATA_CSV_FILE_NAME = '../data/Train_rev1.csv'
     CLEANED_FILE_NAME = '../data/Binary_Preprocessed_Data.csv'
 
-    def __init__(self, train_size=0.75, test_size=None):
+    def __init__(self, train_size=0.75, test_size=None, force_load_all=False):
         """
         :param train_size: can be either a float or int
          - float: ratio of how much is training/test data
@@ -38,6 +39,11 @@ class BaseModel(object):
             print('Pre-processed data exists, reading from the file')
             self.cleaned_encoded_data = self.load_cleaned_data()
             print('Data read complete')
+            if force_load_all:
+                print('loading raw data')
+                self.load_all_data()
+                self.description_feature = BaseModel.data[['FullDescription']]
+                print('Raw data read complete')
         else:
             print('Pre-processed data doesn\'t exist, preprocessing data first')
             print('This operation will take a while')
@@ -63,12 +69,18 @@ class BaseModel(object):
             self.cleaned_encoded_data = self.load_cleaned_data()
 
         print('Splitting train and test')
+        # Because 1 is good
+        # Random state is there so that train and test is always the same for everyone
         self.train_data, self.test_data = train_test_split(self.cleaned_encoded_data,
                                                            train_size=train_size,
                                                            test_size=test_size,
                                                            random_state=1)
-        # Because 1 is good
-        # Random state is there so that train and test is always the same for everyone
+
+        self.description_train_data, self.description_test_data = train_test_split(
+            self.description_feature,
+            train_size=train_size,
+            test_size=test_size,
+            random_state=1)
         self.x_train = self.train_data[:, 0:self.train_data.shape[1] - 1]
         self.y_train = self.train_data[:, self.train_data.shape[1] - 1]
 
@@ -215,3 +227,13 @@ class BaseModel(object):
         print("Train MSE of {}: {}".format(self.__class__.__name__, train_error))
         print("Test MSE of {}: {}".format(self.__class__.__name__, test_error))
         return (train_error, test_error)
+
+    # from https://stackoverflow.com/questions/8955448
+    def save_sparse_csr(self, filename, array):
+        np.savez(filename, data=array.data, indices=array.indices, indptr=array.indptr,
+                 shape=array.shape)
+
+    def load_sparse_csr(self, filename):
+        loader = np.load(filename)
+        return csr_matrix((loader['data'], loader['indices'], loader['indptr']),
+                          shape=loader['shape'])
