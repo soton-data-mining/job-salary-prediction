@@ -24,10 +24,8 @@ def get_part_full_time_features(job_describtion_data, part_full_time_data):
 
 
 if __name__ == "__main__":
-
     TRAIN_NORMALIZED_LOCATION_FILE_NAME = '../data/train_normalised_location.csv'
     TRAIN_DATA_CSV_FILE_NAME = '../data/Train_rev1.csv'
     data = pd.read_csv('../data/Train_rev1.csv')
     part_full_vector = get_part_full_time_features(data[["FullDescription"]],
                                                    data[['ContractType']])
-
