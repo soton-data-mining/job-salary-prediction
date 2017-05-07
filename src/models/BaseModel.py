@@ -24,7 +24,7 @@ class BaseModel(object):
     TRAIN_DATA_CSV_FILE_NAME = '../data/Train_rev1.csv'
     CLEANED_FILE_NAME = '../data/Binary_Preprocessed_Data.csv'
 
-    def __init__(self, train_size=0.75, test_size=None, force_load_all=False):
+    def __init__(self, train_size=0.75, test_size=None, force_load_all=True):
         """
         :param train_size: can be either a float or int
          - float: ratio of how much is training/test data
@@ -224,11 +224,11 @@ class BaseModel(object):
         :param train_result: list of predictions for train set
         :param train_result: list of predictions for test set
         """
-        train_error = sklearn.metrics.mean_absolute_error(self.y_train, train_result)
-        test_error = sklearn.metrics.mean_absolute_error(self.y_test, test_result)
-        print("Train MSE of {}: {}".format(self.__class__.__name__, train_error))
-        print("Test MSE of {}: {}".format(self.__class__.__name__, test_error))
-        return (train_error, test_error)
+        self.mae_train_error = sklearn.metrics.mean_absolute_error(self.y_train, train_result)
+        self.mae_test_error = sklearn.metrics.mean_absolute_error(self.y_test, test_result)
+        print("Train MSE of {}: {}".format(self.__class__.__name__, self.mae_train_error))
+        print("Test MSE of {}: {}".format(self.__class__.__name__, self.mae_test_error))
+        return (self.mae_train_error, self.mae_test_error)
 
     # from https://stackoverflow.com/questions/8955448
     def save_sparse_csr(self, filename, array):

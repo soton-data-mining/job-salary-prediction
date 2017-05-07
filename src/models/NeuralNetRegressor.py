@@ -1,8 +1,8 @@
 from models.BaseModel import BaseModel
-# from keras.layers.core import Dense
-# from keras.models import Sequential
+from keras.layers.core import Dense
+from keras.models import Sequential
 from keras import optimizers as opt
-# from keras import initializers
+from keras import initializers
 from keras import metrics
 from keras.models import model_from_json
 import os.path
@@ -36,8 +36,9 @@ class NeuralNetRegressor(BaseModel):
             print("Loaded " + model_name + " from disk")
             return model
 
-        model = import_model('ut_Dense100_L1_m5s3_L2_m1s03_lr07_d1e07')
-        """
+        # if os.path.isfile("ut_Dense100_L1_m5s3_L2_m1s03_lr07_d1e07"):
+        #     model = import_model('ut_Dense100_L1_m5s3_L2_m1s03_lr07_d1e07')
+        # else:
         model = Sequential()
         model.add(Dense(100, input_dim=85, activation='relu',
                         kernel_initializer=initializers.RandomNormal(
@@ -45,7 +46,6 @@ class NeuralNetRegressor(BaseModel):
         model.add(Dense(1, activation='linear',
                         kernel_initializer=initializers.RandomNormal(
                                 mean=1, stddev=0.3, seed=None)))
-        """
         # rms = opt.RMSprop(lr=0.01, rho=0.9, epsilon=1e-08, decay =1e-9)
         adadelta = opt.Adadelta(lr=1.0, rho=0.95, epsilon=1e-08, decay=0.0)
         # nadam = opt.Nadam(lr=0.05, beta_1=0.9, beta_2=0.999, epsilon=1e-08, schedule_decay=0.004)
@@ -56,6 +56,7 @@ class NeuralNetRegressor(BaseModel):
                 validation_data=(self.x_test, self.y_test),
                 epochs=1000, batch_size=160000, verbose=1
         )
-
+        train_result = model.predict(self.x_train)
+        test_result = model.predict(self.x_test)
         export_model(model, 'ut_Dense100_L1_m5s3_L2_m1s03_lr07_d1e07')
-        return (self.y_train, self.y_test)
+        return (train_result, test_result)

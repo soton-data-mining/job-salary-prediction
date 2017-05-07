@@ -27,7 +27,8 @@ if __name__ == "__main__":
     StandaloneSim = StandaloneSimilarity()
     StandaloneSim.run()
 
-    models_to_graph = [SA, RF, NNR, SupportVectorRegressionModel,
-                       LinearRegressionModel, StandaloneSim]
+    # models_to_graph = [RF]
+    models_to_graph = [SA, RF, NNR, LinearRegressionModel, SupportVectorRegressionModel, StandaloneSim]
+
     rg = ResultsGrapher(models_to_graph)
     rg.plot_bar_chart_error_rates_all()

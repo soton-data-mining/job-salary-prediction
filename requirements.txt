@@ -8,8 +8,10 @@ python-rake>=1.0.7
 # if someone has a proper version, feel free to lock it
 sklearn
 scipy==0.18.0
-keras==1.2.1
-tensorflow==0.12.1
 matplotlib==2.0.0
 tqdm==4.11.2
+keras>=2.0.0
+tensorflow
+tqdm==4.11.2
+h5py
 
