@@ -94,7 +94,7 @@ class BaseModel(object):
                 train_size=train_size,
                 test_size=test_size,
                 random_state=1)
-        except:
+        except AttributeError:
             print("Not loading description training/test data because "
                   "description data was not loaded.")
         self.x_train = self.train_data[:, 0:self.train_data.shape[1] - 1]
@@ -107,11 +107,20 @@ class BaseModel(object):
         self.mae_test_error = -1
 
     def _get_feature_indices(self, feature_name):
+        """
+        Figure out the indices of a feature based on the data in the
+        feature_names attribute (i.e: from Feature_List.csv) and spit them
+        out.
+        :param feature_name: the feature for which you'd like the indices
+        :return: the indices of that feature as a range in an array
+        """
         range_start = 0
         range_end = 0
         for row in self.feature_list:
+            # each *row* looks like ['feature_name', 5]
             if row[0] == feature_name:
                 range_end = range_start + row[1]
+                # aight, we found what we wanted, break out.
                 break
             else:
                 range_start += row[1]
