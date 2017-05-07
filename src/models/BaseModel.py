@@ -24,7 +24,7 @@ class BaseModel(object):
     TRAIN_DATA_CSV_FILE_NAME = '../data/Train_rev1.csv'
     CLEANED_FILE_NAME = '../data/Binary_Preprocessed_Data.csv'
 
-    def __init__(self, train_size=0.75, test_size=None, force_load_all=True):
+    def __init__(self, train_size=0.75, test_size=None, force_load_all=False):
         """
         :param train_size: can be either a float or int
          - float: ratio of how much is training/test data
