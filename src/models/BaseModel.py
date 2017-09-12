@@ -18,6 +18,14 @@ from job_titles_feature_extraction import get_stemmed_sentences
 class BaseModel(object):
     data = None
     normalized_location_data = None
+    cleaned_data = None
+    selected_data = None
+    column_names = []
+
+    x_train = None
+    y_train = None
+    x_test = None
+    y_test = None
 
     TRAIN_NORMALIZED_LOCATION_FILE_NAME = '../data/train_normalised_location.csv'
     TRAIN_DATA_CSV_FILE_NAME = '../data/Train_rev1.csv'
@@ -35,12 +43,12 @@ class BaseModel(object):
         print('Initialized {}'.format(self.__class__.__name__))
         if os.path.exists(BaseModel.CLEANED_FILE_NAME):
             print('Pre-processed data exists, reading from the file')
-            self.cleaned_encoded_data, self.column_names = self.load_cleaned_data()
+            self.load_data(1)
             print('Data read complete')
         else:
             print('Pre-processed data doesn\'t exist, preprocessing data first')
             print('This operation will take a while')
-            self.load_all_data()
+            self.load_data(0)
             print('Raw data read complete')
             # Get features to clean and reshape
             self.description_feature = BaseModel.data[['FullDescription']]
@@ -58,21 +66,9 @@ class BaseModel(object):
 
             (self.processed_data, self.feature_names) = self.preprocess_data()
             self.export_data(self.processed_data, self.feature_names, 'Binary_Preprocessed_Data')
-            self.cleaned_encoded_data, self.column_names = self.load_cleaned_data()
+            # Load cleaned data from disk
+            self.load_data(1)
 
-        print('Splitting train and test')
-        self.train_data, self.test_data = train_test_split(self.cleaned_encoded_data,
-                                                           train_size=train_size,
-                                                           test_size=test_size,
-                                                           random_state=1)
-        # Because 1 is good
-        # Random state is there so that train and test is always the same for everyone
-        self.x_train = self.train_data[:, 0:self.train_data.shape[1] - 1]
-        self.y_train = self.train_data[:, self.train_data.shape[1] - 1]
-
-        self.x_test = self.test_data[:, 0:self.test_data.shape[1] - 1]
-        self.y_test = self.test_data[:, self.test_data.shape[1] - 1]
-        print('Train test split complete \n')
 
     def preprocess_data(self):
         print('Pre-processing begins')
@@ -148,6 +144,22 @@ class BaseModel(object):
         return (concatenated_features, concatenated_column_names)
 
     @staticmethod
+    def remove_features(list_features_to_exclude):
+        BaseModel.selected_data = BaseModel.cleaned_data
+        if len(list_features_to_exclude) > 0 :
+
+            reversed_feature_list = list(reversed(BaseModel.column_names))
+            for str_feature_to_exclude in list_features_to_exclude:
+                for feature in reversed_feature_list:
+                    if str_feature_to_exclude in feature:
+                        feature_pos = BaseModel.column_names.index(feature)
+                        BaseModel.selected_data = \
+                            np.delete(BaseModel.selected_data, feature_pos, 1)
+        (BaseModel.x_train, BaseModel.y_train, BaseModel.x_test, BaseModel.y_test) = \
+            BaseModel.split_train_test(BaseModel.selected_data)
+        return BaseModel.selected_data
+
+    @staticmethod
     def export_data(list_to_write, column_names, file_name):
         print('Exporting data to ../data/' + file_name)
         print('Will read from there next time to avoid pre-processing')
@@ -178,32 +190,45 @@ class BaseModel(object):
             os.makedirs("../predictions")
         f = open('../predictions/' + file_name + '.csv', 'a')
         for index, item in enumerate(prediction_to_write):
-            f.write(str(item))
+            f.write(str(item[0]))
             if index < len(prediction_to_write) - 1:
                 f.write('\n')
         f.close()
         print('Exporting complete \n')
 
     @staticmethod
-    def load_all_data():
-        """
-        loads all data into the static set
-        """
-        BaseModel.data = pd.read_csv(BaseModel.TRAIN_DATA_CSV_FILE_NAME)
-        BaseModel.normalized_location_data = \
-            pd.read_csv(BaseModel.TRAIN_NORMALIZED_LOCATION_FILE_NAME)
+    def load_data(cleaned_not_cleaned):
+        if cleaned_not_cleaned == 0:  # Not cleaned
+            BaseModel.data = pd.read_csv(BaseModel.TRAIN_DATA_CSV_FILE_NAME)
+            BaseModel.normalized_location_data = \
+                pd.read_csv(BaseModel.TRAIN_NORMALIZED_LOCATION_FILE_NAME)
+            BaseModel.column_names = None
+        if cleaned_not_cleaned == 1:  # Cleaned
+            BaseModel.cleaned_data = pd.read_csv(BaseModel.CLEANED_FILE_NAME)
+            BaseModel.column_names = list(BaseModel.cleaned_data.columns.values)
+            BaseModel.cleaned_data = BaseModel.cleaned_data.as_matrix()
+            BaseModel.cleaned_data = BaseModel.cleaned_data.astype(int)
+            # print(BaseModel.cleaned_data)
 
     @staticmethod
-    def load_cleaned_data():
-        loaded_data = pd.read_csv(BaseModel.CLEANED_FILE_NAME)
-        column_names = list(loaded_data.columns.values)
-        loaded_data = loaded_data.as_matrix()
-        loaded_data = loaded_data.astype(int)
-        return (loaded_data, column_names)
+    def split_train_test(data):
+        print('Splitting train and test')
+        train_data, test_data = train_test_split(data,
+                                                           train_size=0.75,
+                                                           random_state=1)
+        # Because 1 is good
+        # Random state is there so that train and test is always the same for everyone
+        x_train = train_data[:, 0:train_data.shape[1] - 1]
+        y_train = train_data[:, train_data.shape[1] - 1]
+
+        x_test = test_data[:, 0:test_data.shape[1] - 1]
+        y_test = test_data[:, test_data.shape[1] - 1]
+        print('Train test split complete \n')
+        return (x_train, y_train, x_test, y_test)
 
     abc.abstractmethod
 
-    def predict(self):
+    def ml_model(self):
         """
         #abstract method, where actual prediction will be implemented
         #:return: list of predictions for test set
@@ -216,18 +241,18 @@ class BaseModel(object):
         :return error of model
         """
         print('Training {}'.format(self.__class__.__name__))
-        (train_result, test_result) = self.predict()
-        (train_error, test_error) = self.calculate_error(train_result, test_result)
+        (train_result, test_result) = self.ml_model()
+        #(train_error, test_error) = self.calculate_error(train_result, BaseModel.y_train, test_result, BaseModel.y_test)
         return 1
 
-    def calculate_error(self, train_result, test_result):
+    def calculate_error(self, train_result, y_train, test_result, y_test):
         """
         calculate mean absolute error
         :param train_result: list of predictions for train set
         :param train_result: list of predictions for test set
         """
-        train_error = sklearn.metrics.mean_absolute_error(self.y_train, train_result)
-        test_error = sklearn.metrics.mean_absolute_error(self.y_test, test_result)
+        train_error = sklearn.metrics.mean_absolute_error(y_train, train_result)
+        test_error = sklearn.metrics.mean_absolute_error(y_test, test_result)
         print("Train MSE of {}: {}".format(self.__class__.__name__, train_error))
         print("Test MSE of {}: {}".format(self.__class__.__name__, test_error))
         return (train_error, test_error)
